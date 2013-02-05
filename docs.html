@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>html5gui readme</title>
+    <script type="text/javascript" src="tools/markdown.js"></script>
+    <script type="text/javascript" src="src/util.js"></script>
+    <script>
+        function load()
+        {
+            var source = document.getElementById('source')
+            var target = document.getElementById('content')
+            var reader = new FileReader()
+            reader.onload = function(e)
+            {
+                target.innerHTML = markdown.toHTML(e.target.result)                
+            }
+            reader.readAsText(source.files[0])
+        }
+    </script>
+  </head>
+  <body onload="">
+    <input type="file" id="source" onchange="load()"/>
+    <div id="content"></div>
+  </body>
+</html>
