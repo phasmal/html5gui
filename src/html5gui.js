@@ -1,3 +1,4 @@
+/** Global logging mechanism, uses browser console where available. */
 u.log = u.singleton(function()
 {
     var logObject = this
@@ -11,7 +12,7 @@ u.log = u.singleton(function()
  * Central Component Registry.
  *  
  */
-u.ComponentRegistry = singleton(function()
+u.ComponentRegistry = u.singleton(function()
 {
     // mapping from type name to component object
     var registry = {}

@@ -43,9 +43,82 @@ u.immediate(function()
     }
 
 
+    /** 
+     * Returns true if `o` has a method (property that is a function) of the given name.
+     * @params
+     *   o:object
+     *   method:string
+     * @return:boolean
+     */
+    u.has = function(o, method)
+    {
+        return o[method] && typeof o[method] == 'function'
+    }
+
+    /** 
+     * Returns a function that takes a single parameter and returns true if that parameter 
+     * {@u.has has a method named} `method`
+     * @params
+     *   method:string
+     */
+    u.canDo = function(method)
+    {
+        var f = function(object)
+        {
+            return u.has(object, method)
+        }
+        return f
+        return u.applyRight(u.has, [method])
+    }
+
+    /** A collection of definitions of method names. This object is a central place to record 
+     *  globally understood names that can be found on methods. Basically this is to duck typed 
+     *  objects what interfaces are to objects in other languages - it allows metods/functions 
+     *  to specify required properties of objects that are passed to them, but in a Javascript 
+     *  way.  
+     * 
+     *  Since javascript objects are not (as of commonly-available versions in 2013) able to
+     *  guarantee any correspondance between types (here we mean the constructor that created 
+     *  the object, not the type as returned by `typeof`) and the methods or meaning of methods
+     *  that are on an object; we (in general) give up on trying to create generalisable meaning
+     *  in objects, and instead assign meaning to the names of the methods of an object. We do
+     *  this by creating a convention that certain names mean certain things (globally within an
+     *  application, at least).  This is a place to notate that convention, and also creates a
+     *  mechanism that allows methods/functions to deal with parameters that don't match the 
+     *  intended constraints.
+     *
+     *  For example, if we were to say that we take a parameter which is an object that we 
+     *  expect to contain a method called 'each', which itself should take a function with certain
+     *  parameters as its parameter; then we can say in our documentation something like:
+     *
+     *     'must support \{@u.can.each}'
+     *
+     *  Then someone reading this interface can look up can.each and will find the definition 
+     *  of the convention for that name, which will specify semantics, parameters etc.
+     *  
+     *  To define a new convention, write code similar to the following, with associated documentation 
+     *  describing the semantics.
+     *
+     *     u.can.myMethod = u.canDo('myMethod')
+     *  
+     */
+    u.can = {}
+
+
+    /** 
+     * Calls the given function once for each item contained in the object (in an object-defined order),
+     * passing the item as the first parameter, and it's index within the object (the meaning of which 
+     * is, again, object-specific)
+     *
+     * @params
+     *   f:function function to be called for each item in the object
+     */
+    u.can.each = u.canDo('each')
+
+
     function each(list, f)
     {
-        if (can.each(list)) 
+        if (u.can.each(list))
         {
             list.each(f)
         }
@@ -111,7 +184,8 @@ u.immediate(function()
 
     /**
      * Returns an array which is the concatenation of the array arguments (or simply a copy of 
-     * the array argument if only one argument is passed)
+     * the array argument if only one argument is passed). If any arguments are not arrays, then
+     * they are added to the output array in their position.
      * @return:*[]
      */
     u.cat = function()
@@ -125,6 +199,10 @@ u.immediate(function()
                 {
                     array.push(item)
                 })
+            }
+            else
+            {
+                array.push(argument)
             }
         })
 
@@ -184,74 +262,6 @@ u.immediate(function()
 
         return g
     }
-
-    /** 
-     * Returns true if `o` has a method (property that is a function) of the given name.
-     * @params
-     *   o:object
-     *   method:string
-     * @return:boolean
-     */
-    u.has = function(o, method)
-    {
-        return o[method] && typeof o[method] == 'function'
-    }
-
-    /** 
-     * Returns a function that takes a single parameter and returns true if that parameter 
-     * {@u.has has a method named} `method`
-     * @params
-     *   method:string
-     */
-    u.canDo = function(method)
-    {
-        return u.applyRight(u.has, [method])
-    }
-
-    /** A collection of definitions of method names. This object is a central place to record 
-     *  globally understood names that can be found on methods. Basically this is to duck typed 
-     *  objects what interfaces are to objects in other languages - it allows metods/functions 
-     *  to specify required properties of objects that are passed to them, but in a Javascript 
-     *  way.  
-     * 
-     *  Since javascript objects are not (as of commonly-available versions in 2013) able to
-     *  guarantee any correspondance between types (here we mean the constructor that created 
-     *  the object, not the type as returned by `typeof`) and the methods or meaning of methods
-     *  that are on an object; we (in general) give up on trying to create generalisable meaning
-     *  in objects, and instead assign meaning to the names of the methods of an object. We do
-     *  this by creating a convention that certain names mean certain things (globally within an
-     *  application, at least).  This is a place to notate that convention, and also creates a
-     *  mechanism that allows methods/functions to deal with parameters that don't match the 
-     *  intended constraints.
-     *
-     *  For example, if we were to say that we take a parameter which is an object that we 
-     *  expect to contain a method called 'each', which itself should take a function with certain
-     *  parameters as its parameter; then we can say in our documentation something like:
-     *
-     *     'must support \{@u.can.each}'
-     *
-     *  Then someone reading this interface can look up can.each and will find the definition 
-     *  of the convention for that name, which will specify semantics, parameters etc.
-     *  
-     *  To define a new convention, write code similar to the following, with associated documentation 
-     *  describing the semantics.
-     *
-     *     u.can.myMethod = u.canDo('myMethod')
-     *  
-     */
-    u.can = {}
-
-
-    /** 
-     * Calls the given function once for each item contained in the object (in an object-defined order),
-     * passing the item as the first parameter, and it's index within the object (the meaning of which 
-     * is, again, object-specific)
-     *
-     * @params
-     *   f:function function to be called for each item in the object
-     */
-    u.can.each = u.canDo('each')
-
 
 
     /** 
