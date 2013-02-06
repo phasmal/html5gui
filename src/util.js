@@ -42,6 +42,78 @@ u.immediate(function()
         return typeof(toTest) == 'object'
     }
 
+    function each(list, f)
+    {
+        if (list.each) // would use u.can.each here, but would create circular dependency
+        {
+            list.each(f)
+        }
+        else if (isArray(list))
+        {
+            for (var i = 0; i < list.length; i++)
+            {
+                f(list[i], i)
+            }
+        }
+        else if (isObject(list))
+        {
+            each(Object.keys(list), function(key)
+            {
+                f(list[key], key)
+            })
+        }
+    }
+    
+    function cat()
+    {
+        var array = []
+        each(Array.prototype.slice.call(arguments, 0), function(argument)
+        {
+            if (isArray(argument))
+            {
+                each(argument, function(item)
+                {
+                    array.push(item)
+                })
+            }
+            else
+            {
+                array.push(argument)
+            }
+        })
+
+        return array
+    }
+    
+    function applyParams(f, paramF)
+    {
+        var g = function()
+        {
+            f.apply(null, u.cat.apply(u, paramF(arguments)))
+        }
+
+        return g
+    }
+    
+    function applyLeft(f, params)
+    {
+        var g = applyParams(f, function(args)
+        {
+            return [params, args]
+        })
+        
+        return g
+    }
+    
+    function applyRight(f, params)
+    {
+        var g = applyParams(f, function(args)
+        {
+            return [args, params]
+        })
+        
+        return g
+    }
 
     /** 
      * Returns true if `o` has a method (property that is a function) of the given name.
@@ -63,12 +135,12 @@ u.immediate(function()
      */
     u.canDo = function(method)
     {
-        var f = function(object)
-        {
-            return u.has(object, method)
-        }
-        return f
-        return u.applyRight(u.has, [method])
+//        var f = function(object)
+//        {
+//            return u.has(object, method)
+//        }
+//        return f
+        return applyRight(u.has, [method])
     }
 
     /** A collection of definitions of method names. This object is a central place to record 
@@ -114,29 +186,6 @@ u.immediate(function()
      *   f:function function to be called for each item in the object
      */
     u.can.each = u.canDo('each')
-
-
-    function each(list, f)
-    {
-        if (u.can.each(list))
-        {
-            list.each(f)
-        }
-        else if (isArray(list))
-        {
-            for (var i = 0; i < list.length; i++)
-            {
-                f(list[i], i)
-            }
-        }
-        else if (isObject(list))
-        {
-            each(Object.keys(list), function(key)
-            {
-                f(list[key], key)
-            })
-        }
-    }
 
     /** 
      * Returns true if `toTest` is a Javascript array.
@@ -188,29 +237,10 @@ u.immediate(function()
      * they are added to the output array in their position.
      * @return:*[]
      */
-    u.cat = function()
-    {
-        var array = []
-        each(Array.prototype.slice.call(arguments, 0), function(argument)
-        {
-            if (isArray(argument))
-            {
-                each(argument, function(item)
-                {
-                    array.push(item)
-                })
-            }
-            else
-            {
-                array.push(argument)
-            }
-        })
-
-        return array
-    }
+    u.cat = cat
 
     /** Alias for {@u.cat} */
-    u.arrayCopy = u.cat
+    u.arrayCopy = cat
 
     /**
      * Binds the given function so it's `this` is always `thisArg`, returning the resulting function.
