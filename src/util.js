@@ -1,3 +1,4 @@
+u = u || {}
 
 /**
  * Mixes source into destination. Mixing means that each property of source 
@@ -9,7 +10,7 @@
  *
  * @return:object returns a reference to destination
  */
-function mixin(source, destination)
+u.mixin = function(source, destination)
 {
     _.each(source, function(value, key)
     {
@@ -17,6 +18,87 @@ function mixin(source, destination)
     })
 
     return destination
+}
+
+/** 
+ * Immediately calls `f` and returns the result. This formalises the common Javascript pattern
+ * *'immediate function'*, the purpose of which is to provide enclosed scope to a snippet of code.
+ * For reference, the *immediate function* pattern normally looks as follows.
+ *
+ *   var value = (function()
+ *   {
+ *       // ... 
+ *       return something
+ *   })()
+ *
+ * @params
+ *   f:function
+ */
+u.immediate = function(f)
+{
+    return f()
+}
+
+/**
+ * Creates an object of type `constructor` and returns the result.
+ * @params
+ *   constructor:function
+ */
+u.singleton = function(constructor)
+{
+    return new constructor()
+}
+
+/**
+ * Binds the given function so it's `this` is always `thisArg`
+ * @params
+ *   thisArg:object
+ *   f:function
+ */
+u.bind = function(thisArg, f)
+{
+    var g = function()
+    {
+        return f.apply(thisArg, arguments)
+    }
+
+    return g
+}
+
+/** 
+ * Calls `f` for each item of `list`. 
+ * @params
+ *   list:(ANY[]|object) if an object, must {@can.each support each}
+ *   f:function function taking parameters item and index
+ */
+u.each = function(list, f)
+{
+    if (list.each) 
+    {
+        list.each(f)
+    }
+    else
+    {
+        for (var i = 0; i < list.length; i++)
+        {
+            f(list[i], i)
+        }
+    }
+}
+
+/**
+ * Returns a function that simply returns the given value.
+ * @params
+ *   value:ANY
+ * @return:ANY the content of the `value` param
+ */
+u.returnValue = function(value)
+{
+    var f = function()
+    {
+        return value
+    }
+    return f
 }
 
 
@@ -30,7 +112,7 @@ function mixin(source, destination)
  *   fail:function called on failed response, passed the status code
  *   [postData:string] data to post.
  */
-function ajaxRequest(url, success, fail, postData)
+u.ajaxRequest = function(url, success, fail, postData)
 {
     function createRequest()
     {
