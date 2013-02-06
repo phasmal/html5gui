@@ -1,24 +1,14 @@
-u = u || {}
-
-/**
- * Mixes source into destination. Mixing means that each property of source 
- * is copied to destination
+/** 'u' library of *u*seful functionality related to generating HTML5 guis using Javascript.
+ *  u is:
+ *  * lean (*u* is like the symbol for micron) and elegant (or so we'd like to think); and
+ *  * *u*ncomplicated (and therefore easy to learn, use and debug)
  *
- * @params
- *   source:object
- *   destination:object
- *
- * @return:object returns a reference to destination
+ *  The ethos of u is to create a library that is true to the form of Javascript and HTML, true to the
+ *  client-server nature of the web, but allows great power through simple, extensible, elegant mechanisms.
+ *  
+ *  Whether it achieves that is up to u.... (sorry, couldn't help it)
  */
-u.mixin = function(source, destination)
-{
-    _.each(source, function(value, key)
-    {
-        destination[key] = value
-    })
-
-    return destination
-}
+u = {}
 
 /** 
  * Immediately calls `f` and returns the result. This formalises the common Javascript pattern
@@ -39,138 +29,325 @@ u.immediate = function(f)
     return f()
 }
 
-/**
- * Creates an object of type `constructor` and returns the result.
- * @params
- *   constructor:function
- */
-u.singleton = function(constructor)
+// wrap the rest of the declarations so they can share implementation.
+u.immediate(function()
 {
-    return new constructor()
-}
-
-/**
- * Binds the given function so it's `this` is always `thisArg`
- * @params
- *   thisArg:object
- *   f:function
- */
-u.bind = function(thisArg, f)
-{
-    var g = function()
+    function isArray(toTest)
     {
-        return f.apply(thisArg, arguments)
+        return Object.prototype.toString.call(toTest) === '[object Array]'
     }
 
-    return g
-}
-
-/** 
- * Calls `f` for each item of `list`. 
- * @params
- *   list:(ANY[]|object) if an object, must {@can.each support each}
- *   f:function function taking parameters item and index
- */
-u.each = function(list, f)
-{
-    if (list.each) 
+    function isObject(toTest)
     {
-        list.each(f)
+        return typeof(toTest) == 'object'
     }
-    else
+
+
+    function each(list, f)
     {
-        for (var i = 0; i < list.length; i++)
+        if (can.each(list)) 
         {
-            f(list[i], i)
+            list.each(f)
         }
-    }
-}
-
-/**
- * Returns a function that simply returns the given value.
- * @params
- *   value:ANY
- * @return:ANY the content of the `value` param
- */
-u.returnValue = function(value)
-{
-    var f = function()
-    {
-        return value
-    }
-    return f
-}
-
-
-/**
- * Ajax request to url, calling success/fail callback on receipt of response. 
- * If postData is specified, then POST is used,  otherwise GET is used.
- * @params
- *   url:string url to connect to
- *   success:function called on successful response, passed the body of the 
-                      response as a string
- *   fail:function called on failed response, passed the status code
- *   [postData:string] data to post.
- */
-u.ajaxRequest = function(url, success, fail, postData)
-{
-    function createRequest()
-    {
-        var xmlhttp = false;
-
-        var factories = [
-            function () {return new XMLHttpRequest()},
-            function () {return new ActiveXObject("Msxml2.XMLHTTP")},
-            function () {return new ActiveXObject("Msxml3.XMLHTTP")},
-            function () {return new ActiveXObject("Microsoft.XMLHTTP")}
-        ]
-
-        for (var i = 0; i < factories.length; i++)
+        else if (isArray(list))
         {
-            try 
+            for (var i = 0; i < list.length; i++)
             {
-                xmlhttp = factories[i]()
+                f(list[i], i)
             }
-            catch (e)
-            {
-                continue
-            }
-            break
         }
-        return xmlhttp
+        else if (isObject(list))
+        {
+            each(Object.keys(list), function(key)
+            {
+                f(list[key], key)
+            })
+        }
     }
 
-    var request = createRequest();
-    if (request)
+    /** 
+     * Returns true if `toTest` is a Javascript array.
+     * @params
+     *   toTest:*
+     */
+    u.isArray = isArray
+  
+    /** 
+     * Returns true if `toTest` is a Javascript object.
+     * @params
+     *   toTest:*
+     */
+    u.isObject = isObject
+
+    /**
+     * Mixes source into destination. Mixing means that each property of source 
+     * is copied to destination
+     *
+     * @params
+     *   source:object
+     *   destination:object
+     *
+     * @return:object returns a reference to destination
+     */
+    u.mixin = function(source, destination)
     {
-        var method = postData ? "POST" : "GET"
-
-        request.open(method, url, true)
-        request.setRequestHeader('User-Agent', 'XMLHTTP/1.0')
-
-        if (postData)
+        each(source, function(value, key)
         {
-            request.setRequestHeader('Content-type','application/x-www-form-urlencoded')
-        }
+            destination[key] = value
+        })
 
-        request.onreadystatechange = function () 
+        return destination
+    }
+
+    /**
+     * Creates an object of type `constructor` and returns the result.
+     * @params
+     *   constructor:function
+     */
+    u.singleton = function(constructor)
+    {
+        return new constructor()
+    }
+
+    /**
+     * Returns an array which is the concatenation of the array arguments (or simply a copy of 
+     * the array argument if only one argument is passed)
+     * @return:*[]
+     */
+    u.cat = function()
+    {
+        var array = []
+        each(Array.prototype.slice.call(arguments, 0), function(argument)
         {
-            if (request.readyState == 4)
+            if (isArray(argument))
             {
-                if (request.status == 200 || request.status == 304) 
+                each(argument, function(item)
                 {
-                    success(request)
-                }
-                else
-                {
-                    fail(request.status)
-                }
+                    array.push(item)
+                })
             }
+        })
+
+        return array
+    }
+
+    /** Alias for {@u.cat} */
+    u.arrayCopy = u.cat
+
+    /**
+     * Binds the given function so it's `this` is always `thisArg`, returning the resulting function.
+     * @params
+     *   thisArg:object
+     *   f:function
+     * @return:function function that calls `f` in such a way that when `f` refers to `this`
+     *                  it will be using `thisArg`
+     */
+    u.bind = function(thisArg, f)
+    {
+        var g = function()
+        {
+            return f.apply(thisArg, arguments)
         }
 
-        request.send(postData);
+        return g
     }
-}
 
+    /** Returns a function which is `f` with the first parameters replaced with the items of `params`
+     * @params
+     *   f:function 
+     *   params:*[]
+     * @return:function
+     */
+    u.apply = function(f, params)
+    {
+        var g = function()
+        {
+            f.apply(null, u.cat(params, arguments))
+        }
+
+        return g
+    }
+
+
+    /** Returns a function which is `f` with the last parameters replaced with the items of `params`
+     * @params
+     *   f:function
+     *   params:*[]
+     * @return:function
+     */
+    u.applyRight = function(f, params)
+    {
+        var g = function()
+        {
+            f.apply(null, u.cat(arguments, params))
+        }
+
+        return g
+    }
+
+    /** 
+     * Returns true if `o` has a method (property that is a function) of the given name.
+     * @params
+     *   o:object
+     *   method:string
+     * @return:boolean
+     */
+    u.has = function(o, method)
+    {
+        return o[method] && typeof o[method] == 'function'
+    }
+
+    /** 
+     * Returns a function that takes a single parameter and returns true if that parameter 
+     * {@u.has has a method named} `method`
+     * @params
+     *   method:string
+     */
+    u.canDo = function(method)
+    {
+        return u.applyRight(u.has, [method])
+    }
+
+    /** A collection of definitions of method names. This object is a central place to record 
+     *  globally understood names that can be found on methods. Basically this is to duck typed 
+     *  objects what interfaces are to objects in other languages - it allows metods/functions 
+     *  to specify required properties of objects that are passed to them, but in a Javascript 
+     *  way.  
+     * 
+     *  Since javascript objects are not (as of commonly-available versions in 2013) able to
+     *  guarantee any correspondance between types (here we mean the constructor that created 
+     *  the object, not the type as returned by `typeof`) and the methods or meaning of methods
+     *  that are on an object; we (in general) give up on trying to create generalisable meaning
+     *  in objects, and instead assign meaning to the names of the methods of an object. We do
+     *  this by creating a convention that certain names mean certain things (globally within an
+     *  application, at least).  This is a place to notate that convention, and also creates a
+     *  mechanism that allows methods/functions to deal with parameters that don't match the 
+     *  intended constraints.
+     *
+     *  For example, if we were to say that we take a parameter which is an object that we 
+     *  expect to contain a method called 'each', which itself should take a function with certain
+     *  parameters as its parameter; then we can say in our documentation something like:
+     *
+     *     'must support \{@u.can.each}'
+     *
+     *  Then someone reading this interface can look up can.each and will find the definition 
+     *  of the convention for that name, which will specify semantics, parameters etc.
+     *  
+     *  To define a new convention, write code similar to the following, with associated documentation 
+     *  describing the semantics.
+     *
+     *     u.can.myMethod = u.canDo('myMethod')
+     *  
+     */
+    u.can = {}
+
+
+    /** 
+     * Calls the given function once for each item contained in the object (in an object-defined order),
+     * passing the item as the first parameter, and it's index within the object (the meaning of which 
+     * is, again, object-specific)
+     *
+     * @params
+     *   f:function function to be called for each item in the object
+     */
+    u.can.each = u.canDo('each')
+
+
+
+    /** 
+     * Calls `f` for each item of `list`. 
+     * @params
+     *   list:(*[]|object) if an object, must {@u.can.each support each}
+     *   f:function function taking parameters item and index
+     */
+    u.each = each
+
+    /**
+     * Returns a function that simply returns the given value.
+     * @params
+     *   value:*
+     * @return:* the content of the `value` param
+     */
+    u.returnValue = function(value)
+    {
+        var f = function()
+        {
+            return value
+        }
+        return f
+    }
+
+
+    /**
+     * Ajax request to url, calling success/fail callback on receipt of response. 
+     * If postData is specified, then POST is used,  otherwise GET is used.
+     * @params
+     *   url:string url to connect to
+     *   success:function called on successful response, passed the body of the 
+                          response as a string
+     *   fail:function called on failed response, passed the status code
+     *   [postData:string] data to post.
+     */
+    u.ajaxRequest = function(url, success, fail, postData)
+    {
+        function createRequest()
+        {
+            var xmlhttp = false;
+
+            var factories = [
+                function () {return new XMLHttpRequest()},
+                function () {return new ActiveXObject("Msxml2.XMLHTTP")},
+                function () {return new ActiveXObject("Msxml3.XMLHTTP")},
+                function () {return new ActiveXObject("Microsoft.XMLHTTP")}
+            ]
+
+            for (var i = 0; i < factories.length; i++)
+            {
+                try 
+                {
+                    xmlhttp = factories[i]()
+                }
+                catch (e)
+                {
+                    continue
+                }
+                break
+            }
+            return xmlhttp
+        }
+
+        var request = createRequest();
+        if (request)
+        {
+            var method = postData ? "POST" : "GET"
+
+            request.open(method, url, true)
+            request.setRequestHeader('User-Agent', 'XMLHTTP/1.0')
+
+            if (postData)
+            {
+                request.setRequestHeader('Content-type','application/x-www-form-urlencoded')
+            }
+
+            request.onreadystatechange = function () 
+            {
+                if (request.readyState == 4)
+                {
+                    if (request.status == 200 || request.status == 304) 
+                    {
+                        success(request)
+                    }
+                    else
+                    {
+                        fail(request.status)
+                    }
+                }
+            }
+
+            request.send(postData);
+        }
+    }
+
+}) // end of u.immediate() block
 
 
