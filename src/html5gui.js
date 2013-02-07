@@ -76,11 +76,14 @@ u.Component = function(type, properties, output)
  *       * output - either a string which is a template that can have properties replaced in it; or
  *                  a gui *specification object* which contains a specification for the inner-components that
  *                  will be used to implement this component
+ * @return:u.Component
  */
 u.component = function(type, config)
 {
     var properties = config.properties ? config.properties : []
     var output = config.output ? output : ''
-    return new Component(type, properties, output)
+    var component = new u.Component(type, properties, output)
+    u.ComponentRegistry.register(type, component)
+    return component
 }
 
