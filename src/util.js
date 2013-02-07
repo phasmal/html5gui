@@ -32,9 +32,18 @@ u.immediate = function(f)
 // wrap the rest of the declarations so they can share implementation.
 u.immediate(function()
 {
+    //
+    // Private functions
+    //
+    
     function isArray(toTest)
     {
         return Object.prototype.toString.call(toTest) === '[object Array]'
+    }
+    
+    function isArguments(toTest)
+    {
+        return Object.prototype.toString.call(toTest) === '[object Arguments]'
     }
 
     function isObject(toTest)
@@ -48,7 +57,7 @@ u.immediate(function()
         {
             list.each(f)
         }
-        else if (isArray(list))
+        else if (isArray(list) || isArguments(list))
         {
             for (var i = 0; i < list.length; i++)
             {
@@ -69,7 +78,7 @@ u.immediate(function()
         var array = []
         each(Array.prototype.slice.call(arguments, 0), function(argument)
         {
-            if (isArray(argument))
+            if (isArray(argument) || isArguments(argument))
             {
                 each(argument, function(item)
                 {
@@ -89,7 +98,7 @@ u.immediate(function()
     {
         var g = function()
         {
-            f.apply(null, u.cat.apply(u, paramF(arguments)))
+            return f.apply(null, cat.apply(u, paramF(arguments)))
         }
 
         return g
@@ -115,6 +124,10 @@ u.immediate(function()
         return g
     }
 
+    // 
+    // Public functions
+    //
+
     /** 
      * Returns true if `o` has a method (property that is a function) of the given name.
      * @params
@@ -135,11 +148,6 @@ u.immediate(function()
      */
     u.canDo = function(method)
     {
-//        var f = function(object)
-//        {
-//            return u.has(object, method)
-//        }
-//        return f
         return applyRight(u.has, [method])
     }
 
@@ -266,15 +274,7 @@ u.immediate(function()
      *   params:*[]
      * @return:function
      */
-    u.apply = function(f, params)
-    {
-        var g = function()
-        {
-            f.apply(null, u.cat(params, arguments))
-        }
-
-        return g
-    }
+    u.apply = applyLeft
 
 
     /** Returns a function which is `f` with the last parameters replaced with the items of `params`
@@ -283,15 +283,7 @@ u.immediate(function()
      *   params:*[]
      * @return:function
      */
-    u.applyRight = function(f, params)
-    {
-        var g = function()
-        {
-            f.apply(null, u.cat(arguments, params))
-        }
-
-        return g
-    }
+    u.applyRight = applyRight
 
 
     /** 
@@ -314,6 +306,7 @@ u.immediate(function()
         {
             return value
         }
+        
         return f
     }
 
