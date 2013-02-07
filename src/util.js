@@ -68,7 +68,10 @@ u.immediate(function()
         {
             each(Object.keys(list), function(key)
             {
-                f(list[key], key)
+                if (list.hasOwnProperty(key))
+                {
+                    f(list[key], key)
+                }
             })
         }
     }
@@ -219,11 +222,14 @@ u.immediate(function()
      *
      * @return:object returns a reference to destination
      */
-    u.mixin = function(source, destination)
+    u.mixin = function(destination, source)
     {
         each(source, function(value, key)
         {
-            destination[key] = value
+            if (source.hasOwnProperty(key))
+            {
+                destination[key] = value
+            }
         })
 
         return destination
