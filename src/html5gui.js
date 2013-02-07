@@ -8,6 +8,30 @@ u.log = u.singleton(function()
     })
 })
 
+/** A template that can be converted into a string relative to a set of properties. 
+ * 
+ *  Template Substitution
+ *  =====================
+ *  
+ *  Property values are substituted into the body of the template spec as follows.
+ *
+ *  * `$` followed by `$` results in a single `$`
+ *  * `$` followed by an identifier (starts with a letter, followed by letters and numbers) results
+ *    in the value of the property matching the identifier
+ *  * `${` followed by an expression, followed by a `}` results in the evaluation of the expression.
+ *  
+ *  Expressions
+ *  ===========
+ *  An expression is only an identifier that results in the corresponding properties value.
+ *  
+ *  @params
+ *    spec:string the spec string representing the template
+ */
+u.Template = function(spec)
+{
+    
+}
+
 /**
  * Central Component Registry.
  *  
@@ -64,6 +88,8 @@ u.Component = function(type, properties, output)
     this.type = u.returnValue(type)
 
     // TODO[RM]** deal with properties and output
+    
+    
 }
 
 /** 
