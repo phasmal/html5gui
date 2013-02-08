@@ -3,7 +3,7 @@ module('html5gui')
 test('template inserts single property value', function()
 {
     var t = new u.Template('_$a_')
-    equal(t.process({a:1}), '_1_')
+    equal(t.apply({a:1}), '_1_')
 })
 
 test('component is accessible from registry after declaration', function()

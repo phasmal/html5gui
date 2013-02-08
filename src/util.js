@@ -36,6 +36,11 @@ u.immediate(function()
     // Private functions
     //
     
+    function isString(toTest)
+    {
+        return typeof(toTest) == 'string'
+    }
+    
     function isArray(toTest)
     {
         return Object.prototype.toString.call(toTest) === '[object Array]'
@@ -57,7 +62,7 @@ u.immediate(function()
         {
             list.each(f)
         }
-        else if (isArray(list) || isArguments(list))
+        else if (isArray(list) || isArguments(list) || isString(list))
         {
             for (var i = 0; i < list.length; i++)
             {
@@ -198,6 +203,13 @@ u.immediate(function()
      */
     u.can.each = u.canDo('each')
 
+    /** 
+     * Returns true if `toTest` is a Javascript string.
+     * @params
+     *   toTest:*
+     */
+    u.isString = isString
+  
     /** 
      * Returns true if `toTest` is a Javascript array.
      * @params

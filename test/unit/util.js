@@ -30,6 +30,16 @@ test('u.canDo creates function that detects method', 2, function()
     ok(f({a:function(){}}))
 })
 
+test('u.isString detects string', 1, function()
+{
+    ok(u.isString(''))
+})
+
+test('u.isString false for non-string', 1, function()
+{
+    ok(!u.isString(1))
+})
+
 test('u.isArray detects array', 1, function()
 {
     ok(u.isArray([]))
@@ -143,6 +153,20 @@ test('u.each loops through arrays', 1, function()
     deepEqual(r, a)
 })
 
+
+test('u.each loops through characters in string', 1, function()
+{
+    var a = 'abc'
+    
+    var r = []
+    
+    u.each(a, function(v)
+    {
+        r.push(v)
+    })
+    
+    deepEqual(r, ['a','b','c'])
+})
 
 test('u.each loops through object members', 1, function()
 {
