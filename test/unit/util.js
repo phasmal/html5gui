@@ -250,7 +250,7 @@ test('u.tail returns array with elements except for first', 1, function()
 
 test('u.tail returns string with characters except for first', 1, function()
 {
-    equal(u.tail('abc'), 'ab')
+    equal(u.tail('abc'), 'bc')
 })
 
 test('u.tail of array with 1 element returns empty array', 1, function()

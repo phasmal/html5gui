@@ -50,6 +50,11 @@ u.immediate(function()
     {
         return Object.prototype.toString.call(toTest) === '[object Arguments]'
     }
+    
+    function isArrayLike(toTest)
+    {
+        return isString(toTest) || isArray(toTest) || isArguments(toTest)
+    }
 
     function isObject(toTest)
     {
@@ -62,7 +67,7 @@ u.immediate(function()
         {
             list.each(f)
         }
-        else if (isArray(list) || isArguments(list) || isString(list))
+        else if (isArrayLike(list))
         {
             for (var i = 0; i < list.length; i++)
             {
@@ -207,6 +212,7 @@ u.immediate(function()
      * Returns true if `toTest` is a Javascript string.
      * @params
      *   toTest:*
+     * @return:boolean
      */
     u.isString = isString
   
@@ -214,8 +220,16 @@ u.immediate(function()
      * Returns true if `toTest` is a Javascript array.
      * @params
      *   toTest:*
+     * @return:boolean
      */
     u.isArray = isArray
+    
+    /**
+     * Returns true if `toTest` can be iterated like an array (is a string or array or arguments 
+     * object)
+     * @return:boolean
+     */
+    u.isArrayLike = isArrayLike
   
     /** 
      * Returns true if `toTest` is a Javascript object.
@@ -332,16 +346,48 @@ u.immediate(function()
     u.nil = {}
 
     /** 
-     * Returns the first element of the given array/first character of the given string.
+     * Returns the first element of the given array/first character of the given string, {@u.nil}
+     * if the list is empty.
+     * 
      * @params
-     *   list:(string:*[])
+     *   list:(string|*[])
+     *   
+     * @returns:(string|*[])
      */
-    u.head = function()
+    u.head = function(list)
     {
-        
+        return isArrayLike(list) && list.length > 0 ? list[0] : u.nil
     }
     
-
+    /**
+     * Returns a list containing the elements in the given list from the second (index 1) element
+     * onwards, {@{u.nil} if the list is empty. If list is a string, returns a string, otherwise 
+     * returns an array.
+     * 
+     * @params
+     *   list:(string|*[])
+     *   
+     * @returns:(string|*[])
+     */
+    u.tail = function(list)
+    {
+        var t = u.nil
+       
+        if (list.length > 0)
+        {
+            if (isArguments(list) || isArray(list))
+            {
+                t = Array.prototype.slice.call(list, 1)
+            }
+            else if (isString(list))
+            {
+                t = list.substring(1)
+            }
+        }
+       
+        return t
+    }
+    
     /**
      * Ajax request to url, calling success/fail callback on receipt of response. 
      * If postData is specified, then POST is used,  otherwise GET is used.
