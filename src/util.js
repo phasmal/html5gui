@@ -328,6 +328,19 @@ u.immediate(function()
         return f
     }
 
+    /** A value representing no value. */
+    u.nil = {}
+
+    /** 
+     * Returns the first element of the given array/first character of the given string.
+     * @params
+     *   list:(string:*[])
+     */
+    u.head = function()
+    {
+        
+    }
+    
 
     /**
      * Ajax request to url, calling success/fail callback on receipt of response. 
@@ -335,7 +348,7 @@ u.immediate(function()
      * @params
      *   url:string url to connect to
      *   success:function called on successful response, passed the body of the 
-                          response as a string
+     *                    response as a string
      *   fail:function called on failed response, passed the status code
      *   [postData:string] data to post.
      */

@@ -1,3 +1,4 @@
+module('base')
 
 test('Immediate Function is called right away', 2, function()
 {
@@ -210,4 +211,64 @@ test('u.returnValue always returns the configured value', 2, function()
     
     equal(f(), 'a')
     equal(f(), 'a')
+})
+
+test('u.head returns first element of array', 1, function()
+{
+    equal(u.head([1,2,3]), 1)
+})
+
+test('u.head returns first character of string', 1, function()
+{
+    equal(u.head('abc'), 'a')
+})
+
+test('u.head returns nil for empty array', 1, function()
+{
+    equal(u.head([]), u.nil)
+})
+
+test('u.head returns nil for empty string', 1, function()
+{
+    equal(u.head(''), u.nil)
+})
+
+test('u.tail returns array 1 shorter than original', 1, function()
+{
+    equal(u.tail([1,2,3]).length, 2)
+})
+
+test('u.tail returns string 1 shorter than original', 1, function()
+{
+    equal(u.tail('abc').length, 2)
+})
+
+test('u.tail returns array with elements except for first', 1, function()
+{
+    deepEqual(u.tail([1,2,3]), [2,3])
+})
+
+test('u.tail returns string with characters except for first', 1, function()
+{
+    equal(u.tail('abc'), 'ab')
+})
+
+test('u.tail of array with 1 element returns empty array', 1, function()
+{
+    deepEqual(u.tail([1]), [])
+})
+
+test('u.tail of string with 1 character returns empty string', 1, function()
+{
+    equal(u.tail('a'), '')
+})
+
+test('u.tail of empty array returns nil', 1, function()
+{
+    equal(u.tail([]), u.nil)
+})
+
+test('u.tail of empty string returns nil', 1, function()
+{
+    equal(u.tail(''), u.nil)
 })

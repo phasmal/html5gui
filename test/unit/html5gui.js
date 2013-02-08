@@ -1,5 +1,11 @@
 module('html5gui')
 
+test('template escapes $', function()
+{
+    var t = new u.Template('_$$_')
+    equal(t.apply(), '_$_')
+})
+
 test('template inserts single property value', function()
 {
     var t = new u.Template('_$a_')

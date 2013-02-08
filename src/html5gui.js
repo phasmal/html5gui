@@ -29,7 +29,75 @@ u.log = u.singleton(function()
  */
 u.Template = function(spec)
 {
+    function Expression(name)
+    {
+        this.apply = function(props)
+        {
+            var value = ''
+            if (props[name])
+            {
+                value = props[name]
+            }
+            else
+            {
+                u.log.warn(
+                    "Applying expression '" + name + "' with no matching property, returning blank.")
+            }
+            return value
+        }
+    }
     
+    function readIdentifier(text)
+    {
+        
+    }
+    
+    function parse(spec)
+    {
+        var symbols = [] // TODO[RM]*** List instead of array
+        if (spec.length > 0)
+        {
+            var h = u.head(spec)
+            if (h == '$')
+            {
+                var tail = u.tail(spec)
+                var next = u.head(tail)
+                if (next == '$')
+                {
+                    symbols = u.cat('$', parse(u.tail(tail)))
+                }
+                else
+                {
+                    var split = readIdentifier(tail)
+                    if (split != null)
+                    {
+                        symbols = u.cat(new Expression(split.identifier), parse(split.remainder))
+                    }
+                    else
+                    {
+                        symbols = u.cat('$', parse(tail))
+                    }
+                }
+            }
+            else
+            {
+                symbols = u.cat(parse(u.tail(spec)))
+            }
+        }
+        return symbols
+    }
+    
+    var parts = []
+    
+    u.immediate(function()
+    {
+        var i = 0
+
+        while (i < spec.length)
+        {
+            
+        }
+    })
 }
 
 /**
