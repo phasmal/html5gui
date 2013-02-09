@@ -87,17 +87,7 @@ u.Template = function(spec)
         return symbols
     }
     
-    var parts = []
-    
-    u.immediate(function()
-    {
-        var i = 0
-
-        while (i < spec.length)
-        {
-            
-        }
-    })
+    var parts = parse(spec)
 }
 
 /**
