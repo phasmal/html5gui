@@ -60,6 +60,11 @@ u.immediate(function()
     {
         return typeof(toTest) == 'object'
     }
+    
+    function isFunction(toTest)
+    {
+        return typeof(toTest) == 'function'
+    }
 
     function each(list, f)
     {
@@ -237,6 +242,13 @@ u.immediate(function()
      *   toTest:*
      */
     u.isObject = isObject
+  
+    /** 
+     * Returns true if `toTest` is a Javascript function.
+     * @params
+     *   toTest:*
+     */
+    u.isFunction = isFunction
 
     /**
      * Mixes source into destination. Mixing means that each property of source 
@@ -343,7 +355,9 @@ u.immediate(function()
     }
 
     /** A value representing no value. */
-    u.nil = {}
+    u.nil = {
+        isNil: true
+    }
 
     /** 
      * Returns the first element of the given array/first character of the given string, {@u.nil}

@@ -1,3 +1,4 @@
+
 module('base')
 
 test('Immediate Function is called right away', 2, function()
@@ -60,6 +61,16 @@ test('u.isObject detects object', 2, function()
 test('u.isObject is false for non-objects', 1, function()
 {
     ok(!u.isObject(''))
+})
+
+test('u.isFunction detects function', 1, function()
+{
+    ok(u.isFunction(function(){}))
+})
+
+test('u.isFunction is false for non-functions', 1, function()
+{
+    ok(!u.isFunction(''))
 })
 
 test('u.mixin mixes in members, overriding existing', 3, function()
