@@ -17,7 +17,7 @@ test('stream iterates through whole array', function()
     
     n = s
     i = 0
-    while (n.hasValue())
+    while (n.hasValues())
     {
         equal(n.head(), a[i++])
         n = n.tail()
@@ -42,7 +42,7 @@ test('stream iterates through whole string', function()
     
     n = s
     i = 0
-    while (n.hasValue())
+    while (n.hasValues())
     {
         equal(n.head(), a[i++])
         n = n.tail()
@@ -61,7 +61,7 @@ test('stream iterates through function values', function()
     })
     
     var b = []
-    while (s.hasValue())
+    while (s.hasValues())
     {
         b.push(s.head())
         s = s.tail()

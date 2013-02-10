@@ -47,21 +47,26 @@ u.Template = function(spec)
         }
     }
     
-    function readIdentifier(text)
+    function readIdentifier(stream)
     {
         
     }
     
-    function parse(spec)
+    function readExpression(stream)
+    {
+        
+    }
+    
+    function parse(stream)
     {
         var symbols = [] // TODO[RM]*** List instead of array
-        if (spec.length > 0)
+        if (stream.hasValues())
         {
-            var h = u.head(spec)
+            var h = stream.head()
             if (h == '$')
             {
-                var tail = u.tail(spec)
-                var next = u.head(tail)
+                var tail = stream.tail()
+                var next = tail.head()
                 if (next == '$')
                 {
                     symbols = u.cat('$', parse(u.tail(tail)))
@@ -87,7 +92,7 @@ u.Template = function(spec)
         return symbols
     }
     
-    var parts = parse(spec)
+    var parts = parse(new u.collection.Stream(spec))
 }
 
 /**

@@ -44,7 +44,7 @@ u.collection.Stream = function(items)
      *  
      * @return:boolean
      */
-    this.hasValue = u.returnValue(head != u.nil)
+    this.hasValues = u.returnValue(head != u.nil)
     
     /** 
      * Returns the item at the head of the stream, {@u.nil} if there are no items in the stream. 
@@ -91,7 +91,7 @@ u.collection.Stream = function(items)
 
 /** A {@u.collection.Stream} with no items. */
 u.collection.EmptyStream = u.singleton(function(){
-    this.hasValue = u.returnValue(false)
+    this.hasValues = u.returnValue(false)
     this.head = u.returnValue(u.nil)
     this.tail = u.returnValue(this)
     this.read = u.noop
