@@ -68,12 +68,31 @@ u.collection.Stream = function(items)
         }
         return next
     }
+    
+    /**
+     * Uses the given reader to read the stream one item at a time
+     * 
+     * @params
+     * reader:function a function that will be passed the elements of the stream, one at a time
+     *                 until it returns false 
+     */
+    this.read = function(reader)
+    {
+        if (this.hasValue())
+        {
+            var readNext = reader(head)
+            if (readNext)
+            {
+                this.tail().read(reader)
+            }
+        }
+    }
 }
 
 /** A {@u.collection.Stream} with no items. */
-u.collection.EmptyStream = u.singleton(function()
-{
+u.collection.EmptyStream = u.singleton(function(){
     this.hasValue = u.returnValue(false)
     this.head = u.returnValue(u.nil)
     this.tail = u.returnValue(this)
+    this.read = u.noop
 })

@@ -70,8 +70,18 @@ test('stream iterates through function values', function()
     equal(s, u.collection.EmptyStream)
 })
 
-test('stream iterator d', function()
+test('stream reader reads part of stream', function()
 {
-    expect(0)
+    var s = new u.collection.Stream([1,2,3,4,5])
+    
+    var l = []
+    
+    s.read(function(value)
+    {
+        l.push(value)
+        return value < 4
+    })
+    
+    deepEqual(l, [1,2,3,4])
 })
 

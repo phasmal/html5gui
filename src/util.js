@@ -249,6 +249,11 @@ u.immediate(function()
      *   toTest:*
      */
     u.isFunction = isFunction
+    
+    /**
+     * A convenience function that does nothing
+     */
+    u.noop = function() {}
 
     /**
      * Mixes source into destination. Mixing means that each property of source 
