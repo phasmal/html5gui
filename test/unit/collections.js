@@ -50,6 +50,26 @@ test('stream iterates through whole string', function()
     equal(n, u.collection.EmptyStream)
 })
 
+test('stream iterates through function values', function()
+{
+    
+    var a = [1,2,3]
+    var i = 0
+    var s = new u.collection.Stream(function()
+    {
+        return i < a.length ? a[i++] : u.nil
+    })
+    
+    var b = []
+    while (s.hasValue())
+    {
+        b.push(s.head())
+        s = s.tail()
+    }
+    deepEqual(b, a)
+    equal(s, u.collection.EmptyStream)
+})
+
 test('stream iterator d', function()
 {
     expect(0)
