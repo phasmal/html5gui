@@ -29,14 +29,29 @@ u.log = u.singleton(function()
  */
 u.Template = function(spec)
 {
+    function Block()
+    {
+        var statements = new u.collection.List()
+        this.add = statements.add
+        this.apply = function(context)
+        {
+            var result = ''
+            statements.each(function(statement)
+            {
+                result = result + statement.apply(context)
+            })
+            return result
+        }
+    }
+    
     function Expression(name)
     {
-        this.apply = function(props)
+        this.apply = function(context)
         {
             var value = ''
-            if (props[name])
+            if (context[name])
             {
-                value = props[name]
+                value = context[name]
             }
             else
             {
@@ -47,14 +62,27 @@ u.Template = function(spec)
         }
     }
     
-    function readIdentifier(stream)
+    function ParseResult(expression, remaining)
     {
-        
+        this.expression = expression
+        this.remaining = remaining
+        this.apply = expression.apply
     }
     
-    function readExpression(stream)
-    {
+    var parsers = {
+        block: function(stream)
+        {
+        },
         
+        identifier: function(stream)
+        {
+            
+        },
+
+        expression: function(stream)
+        {
+            
+        }
     }
     
     function parse(stream)
@@ -63,17 +91,17 @@ u.Template = function(spec)
         if (stream.hasValues())
         {
             var h = stream.head()
+            var tail = stream.tail()
             if (h == '$')
             {
-                var tail = stream.tail()
                 var next = tail.head()
                 if (next == '$')
                 {
-                    symbols = u.cat('$', parse(u.tail(tail)))
+                    symbols = u.cat('$', parse(tail.tail()))
                 }
                 else
                 {
-                    var split = readIdentifier(tail)
+                    var split = parsers.readIdentifier(tail)
                     if (split != null)
                     {
                         symbols = u.cat(new Expression(split.identifier), parse(split.remainder))
@@ -86,13 +114,21 @@ u.Template = function(spec)
             }
             else
             {
-                symbols = u.cat(parse(u.tail(spec)))
+                symbols = u.cat(parse(tail))
             }
         }
         return symbols
     }
     
-    var parts = parse(new u.collection.Stream(spec))
+    var parts = parse(new u.collection.Stream(spec)).parts
+    
+    /** Applies this template in the context of the given objects.
+     *
+     * @params
+     *   context:object? an object whose properties are exposed to the template as variables, 
+     *                   default is an empty object
+     */
+    this.apply = parts.apply
 }
 
 /**

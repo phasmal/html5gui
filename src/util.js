@@ -317,7 +317,8 @@ u.immediate(function()
         return g
     }
 
-    /** Returns a function which is `f` with the first parameters replaced with the items of `params`
+    /** 
+     * Returns a function which is `f` with the first parameters replaced with the items of `params`
      * @params
      *   f:function 
      *   params:*[]
@@ -326,13 +327,31 @@ u.immediate(function()
     u.apply = applyLeft
 
 
-    /** Returns a function which is `f` with the last parameters replaced with the items of `params`
+    /** 
+     * Returns a function which is `f` with the last parameters replaced with the items of `params`
      * @params
      *   f:function
      *   params:*[]
      * @return:function
      */
     u.applyRight = applyRight
+    
+    /** 
+     * Returns a function which is `f` that only takes `count` parameters. The `this` value in
+     * the returned function is null (use with {@u.bind} if another value is desired).
+     * @params
+     *   count:number
+     *   f:function
+     * @return:function
+     */
+    u.limit = function(count, f)
+    {
+        return (function()
+        {
+            var args = Array.prototype.slice.apply(arguments, 0, Math.min(arguments.length, count))
+            return f.apply(null, args)
+        })
+    }
 
 
     /** 
@@ -357,6 +376,19 @@ u.immediate(function()
         }
         
         return f
+    }
+    
+    /** Returns a function that returns the boolean negation of the given function's return.
+     *  @params
+     *    wrapped:function
+     *  @return:function
+     */
+    u.not = function(wrapped)
+    {
+        return (function() 
+        { 
+            return !wrapped()
+        })
     }
 
     /** A value representing no value. */

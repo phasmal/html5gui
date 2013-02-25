@@ -13,7 +13,6 @@ u.collection.Stream = function(items)
 {
     var iterator
     
-    
     if (u.isArrayLike(items))
     {
         iterator = u.immediate(function()
@@ -26,7 +25,7 @@ u.collection.Stream = function(items)
             return f
         })
     }
-    else if(u.isFunction(items))
+    else if (u.isFunction(items))
     {
         iterator = items
     }
@@ -46,6 +45,13 @@ u.collection.Stream = function(items)
      */
     this.hasValues = u.returnValue(head != u.nil)
     
+    /**
+     * Returns true if there are no more values in this stream. This means  a call to {@#head()}
+     * returns u.nil.
+     * @return:boolean
+     */
+    this.isEmpty = u.not(this.hasValues)
+    
     /** 
      * Returns the item at the head of the stream, {@u.nil} if there are no items in the stream. 
      * @return:*
@@ -53,20 +59,106 @@ u.collection.Stream = function(items)
     this.head = u.returnValue(head)
     
     /** Returns the remainder of the stream (a stream containing everything except for the head). If
-     *  this stream has no elements, then a copy of this is returned.
+     *  this stream has no elements, then this is returned.
      *  @return:u.collection.Stream
      */
     this.tail = function()
     {
         if (next.isNil)
         {
-            next = this.hasValue() ? new u.collection.Stream(iterator) : this
-            if (!next.hasValue())
+            next = this.hasValues() ? new u.collection.Stream(iterator) : u.collection.EmptyStream
+            if (next.isEmpty())
             {
                 next = u.collection.EmptyStream
             }
         }
         return next
+    }
+    
+    /** Returns a stream where each item is the result of calling mapping on items from this stream 
+     * @params
+     *   mapping:function
+     */
+    this.map = function(mapping)
+    {
+        var s = this
+        return new u.collection.Stream(function()
+        {
+            var item = s.head()
+            s = s.tail()
+            return item != u.nil ? mapping(item) : item
+        })
+    }
+    
+    /** 
+     * Returns the result of calling the reducer function on each item of the stream 
+     * @params
+     *   initial:* the initial value that is passed to the first call to reducer
+     *   reducer:function a function that is passed two parameters, the current accumulated 
+     *                    value/total and the current value
+     * @return:* the final accumulated value/total
+     */
+    this.reduce = function(initial, reducer)
+    {
+        var acc = initial
+        this.each(function(item)
+        {
+            acc = reducer(acc, item)
+        })
+        return acc
+    }
+    
+    /**
+     * Returns a stream which contains all the items from this stream that the test function
+     * returns true for.
+     * @params
+     *   tester:function is passed each item from the stream and should return true if it should
+     *                   stay in the new stream
+     * @return:u.collection.Stream 
+     */
+    this.filter = function(tester)
+    {
+        function nextMatch(stream)
+        {
+            return (!stream.hasValues() || tester(stream.head())) ? stream : nextMatch(stream.tail())
+        }
+        
+        var s = this
+        return new u.collection.Stream(function()
+        {
+            s = nextMatch(s)
+            var v = s.head()
+            s = s.tail()
+            return v
+        })
+    }
+    
+    /** 
+     * Returns an array containing all of the items from this stream in order.
+     * @return:*[]
+     */
+    this.toArray = function()
+    {
+        return (this.reduce([], function(array, item)
+        {
+            array.push(item)
+            return array
+        }))
+    }
+    
+    /** 
+     * Passes each item of the stream in turn to the iterator function.
+     * @params
+     *   iterator:function
+     */
+    this.each = function(iterator)
+    {
+        var s = this
+        while (s.hasValues())
+        {
+            iterator(s.head())
+            s = s.tail()
+        }
     }
     
     /**
@@ -78,7 +170,7 @@ u.collection.Stream = function(items)
      */
     this.read = function(reader)
     {
-        if (this.hasValue())
+        if (this.hasValues())
         {
             var readNext = reader(head)
             if (readNext)
@@ -89,10 +181,33 @@ u.collection.Stream = function(items)
     }
 }
 
+
+
 /** A {@u.collection.Stream} with no items. */
-u.collection.EmptyStream = u.singleton(function(){
+u.collection.EmptyStream = u.singleton(function()
+{
     this.hasValues = u.returnValue(false)
+    this.isEmpty = u.not(this.hasValues)
     this.head = u.returnValue(u.nil)
-    this.tail = u.returnValue(this)
+    this.tail = function() { return this }
     this.read = u.noop
 })
+
+
+/** 
+ * An abstract grouping of items 
+ *  @params
+ *    iterator:function a function which will return the next item in the collection with each call, 
+ *                      returning u.nil if there are no more items to return
+ * @extends u.collection.Stream
+ */
+u.collection.Collection = function(iterator)
+{
+    u.mixin(this, iterator)
+    
+    this.every
+    this.any
+    this.contains
+    this.size
+    this.toString
+}
