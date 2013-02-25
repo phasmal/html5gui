@@ -134,19 +134,6 @@ u.collection.Stream = function(items)
     }
     
     /** 
-     * Returns an array containing all of the items from this stream in order.
-     * @return:*[]
-     */
-    this.toArray = function()
-    {
-        return (this.reduce([], function(array, item)
-        {
-            array.push(item)
-            return array
-        }))
-    }
-    
-    /** 
      * Passes each item of the stream in turn to the iterator function.
      * @params
      *   iterator:function
@@ -203,11 +190,17 @@ u.collection.EmptyStream = u.singleton(function()
  */
 u.collection.Collection = function(iterator)
 {
-    u.mixin(this, iterator)
+    u.mixin(this, new u.collection.Stream(iterator))
     
     this.every
     this.any
     this.contains
     this.size
     this.toString
+    this.asArray = function()
+    {
+        var a = []
+        this.each(a.push.bind(a))
+        return a
+    }
 }

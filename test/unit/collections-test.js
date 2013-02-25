@@ -147,9 +147,19 @@ var testCol = function(each)
 
 test('collection converts to array', function()
 {
-    var a = [1,2,3,4,5]
-    var s = new u.collection.Stream(a)
-    deepEqual(s.asArray, a)
+    var n = 0
+    var c = new u.collection.Collection(function()
+    {
+        return n >= 100 ? u.nil : n++
+    })
+    
+    var a = []
+    for (var i = 0; i < 100; i++)
+    {
+        a[i] = i
+    }
+    
+    deepEqual(c.asArray(), a)
 })
 
 test('collection checks if every item matches', function()

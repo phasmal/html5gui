@@ -65,14 +65,10 @@ u.immediate(function()
     {
         return typeof(toTest) == 'function'
     }
-
-    function each(list, f)
+    
+    function eachNoCustom(list, f)
     {
-        if (list.each) // would use u.can.each here, but would create circular dependency
-        {
-            list.each(f)
-        }
-        else if (isArrayLike(list))
+        if (isArrayLike(list))
         {
             for (var i = 0; i < list.length; i++)
             {
@@ -88,6 +84,18 @@ u.immediate(function()
                     f(list[key], key)
                 }
             })
+        }
+    }
+
+    function each(list, f)
+    {
+        if (list.each) // would use u.can.each here, but would create circular dependency
+        {
+            list.each(f)
+        }
+        else 
+        {
+            eachNoCustom(list, f)
         }
     }
     
@@ -267,7 +275,7 @@ u.immediate(function()
      */
     u.mixin = function(destination, source)
     {
-        each(source, function(value, key)
+        eachNoCustom(source, function(value, key)
         {
             if (source.hasOwnProperty(key))
             {
