@@ -176,8 +176,15 @@ u.collection.EmptyStream = u.singleton(function()
     this.hasValues = u.returnValue(false)
     this.isEmpty = u.not(this.hasValues)
     this.head = u.returnValue(u.nil)
-    this.tail = function() { return this }
+    this.tail = u.returnValue(this)
     this.read = u.noop
+    this.map = u.noop
+    this.reduce = function(initial, reducer)
+    {
+        return initial
+    }
+    this.filter = u.returnValue(this)
+    this.each = u.noop
 })
 
 
@@ -192,15 +199,74 @@ u.collection.Collection = function(iterator)
 {
     u.mixin(this, new u.collection.Stream(iterator))
     
-    this.every
-    this.any
-    this.contains
-    this.size
-    this.toString
+    var array = u.nil
+    
+    /** 
+     * Returns true if `test` return true for every item in the list. 
+     * @params
+     *   test:function
+     * @return:boolean
+     */
+    this.every = function(test)
+    {
+        return this.reduce(true, function(every, item)
+        {
+            return every && test(item)
+        })
+    }
+    
+    /** 
+     * Returns true if `test` returns true for any item in the list.
+     * @params
+     *   test:function
+     * @return:boolean
+     */
+    this.any = function(test)
+    {
+        return this.reduce(false, function(any, item)
+        {
+            return any || test(item)
+        })
+    }
+    
+    /**
+     * Returns true if the given item can be found in the collection.
+     * @params
+     *   toMatch:*
+     */
+    this.contains = function(toMatch)
+    {
+        return this.any(function(item)
+        {
+            return item == toMatch
+        })
+    }
+    
+    /**
+     * Returns the number of items in the collection.
+     * @return:number
+     */
+    this.size = function()
+    {
+        return this.asArray().length
+    }
+    
+    this.toString = function()
+    {
+        return '[' + this.asArray().join(', ') + ']'
+    }
+    
+    /** 
+     * Returns the contents of this collection in order as an array.
+     * @return:*[]
+     */
     this.asArray = function()
     {
-        var a = []
-        this.each(a.push.bind(a))
-        return a
+        if (array.isNil)
+        {
+            array = []
+            this.each(array.push.bind(array))
+        }
+        return array
     }
 }

@@ -164,6 +164,7 @@ test('collection converts to array', function()
 
 test('collection checks if every item matches', function()
 {
+    
 })
 
 test('collection checks if any match', function()
@@ -176,6 +177,7 @@ test('collection checks if it contains', function()
 
 test('collection size', function()
 {
+    equal()
 })
 
 test('collection converts to string', function()
