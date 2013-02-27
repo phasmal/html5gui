@@ -69,17 +69,57 @@ u.Template = function(spec)
         this.apply = expression.apply
     }
     
+    function isWhite(c)
+    {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r'
+    }
+    
+    function stripWhite(stream)
+    {
+        var s = stream
+        while (isWhite(s.head()))
+        {
+            s = s.tail()
+        }
+        return s
+    }
+    
+    function toString(stream)
+    {
+        var text = ''
+        var s = stream
+        while (s.hasValues())
+        {
+            text = text + s.head()
+        }
+        return text
+    }
+    
     var parsers = {
-        block: function(stream)
+        /** The outer part of an expression that is $ followed by { */
+        wrappedValue: function(stream)
         {
+            if (stream.head() == '{')
+            {
+                var result = parsers.expression(stream.next())
+                var remainder = stripWhite(result.remaining)
+                if (remainder.head() == '}')
+                {
+                    result.remainder = remainder.tail()
+                    return result
+                }
+                else
+                {
+                    // TODO[RM]** add line and char by wrapping the stream as a ... 'ParsingStream'?
+                    throw new Error("Parse Error: expected '}', but found " + toString(remainder))
+                }
+            }
+            else
+            {
+                return parsers.value(stream)
+            }
         },
-        
-        identifier: function(stream)
-        {
-            
-        },
-
-        expression: function(stream)
+        value: function(stream)
         {
             
         }
@@ -87,7 +127,7 @@ u.Template = function(spec)
     
     function parse(stream)
     {
-        var symbols = [] // TODO[RM]*** List instead of array
+        var symbols = [] // TODO[RM]* List instead of array
         if (stream.hasValues())
         {
             var h = stream.head()

@@ -191,8 +191,9 @@ u.collection.EmptyStream = u.singleton(function()
 /** 
  * An abstract grouping of items 
  *  @params
- *    iterator:function a function which will return the next item in the collection with each call, 
- *                      returning u.nil if there are no more items to return
+ *    iterator:string|*[]|function a string or array withe the collection items, or a function which 
+ *                                 will return the next item in the collection with each call, 
+ *                                 returning u.nil if there are no more items to return
  * @extends u.collection.Stream
  */
 u.collection.Collection = function(iterator)
@@ -269,4 +270,18 @@ u.collection.Collection = function(iterator)
         }
         return array
     }
+}
+
+
+/**
+ * A stream that supports reporting character and line locations. 
+ * 
+ * @params
+ *   items:string|*[]|function 
+ */
+u.collection.ParseStream = function(items)
+{
+    u.mixin(this, new u.collection.Stream(items))
+    
+    
 }

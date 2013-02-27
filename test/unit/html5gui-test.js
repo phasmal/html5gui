@@ -1,5 +1,6 @@
-module('html5gui')
 
+
+module('template')
 test('template escapes $', function()
 {
     var t = new u.Template('_$$_')
