@@ -31,7 +31,7 @@ u.collection.Stream = function(items)
     }
     else
     {
-        iterator = u.returnValue(u.nil)
+        iterator = u.returns(u.nil)
     }
     
     var head = iterator()
@@ -43,7 +43,7 @@ u.collection.Stream = function(items)
      *  
      * @return:boolean
      */
-    this.hasValues = u.returnValue(head != u.nil)
+    this.hasValues = u.returns(head != u.nil)
     
     /**
      * Returns true if there are no more values in this stream. This means  a call to {@#head()}
@@ -56,7 +56,7 @@ u.collection.Stream = function(items)
      * Returns the item at the head of the stream, {@u.nil} if there are no items in the stream. 
      * @return:*
      */
-    this.head = u.returnValue(head)
+    this.head = u.returns(head)
     
     /** Returns the remainder of the stream (a stream containing everything except for the head). If
      *  this stream has no elements, then this is returned.
@@ -173,17 +173,17 @@ u.collection.Stream = function(items)
 /** A {@u.collection.Stream} with no items. */
 u.collection.EmptyStream = u.singleton(function()
 {
-    this.hasValues = u.returnValue(false)
+    this.hasValues = u.returns(false)
     this.isEmpty = u.not(this.hasValues)
-    this.head = u.returnValue(u.nil)
-    this.tail = u.returnValue(this)
+    this.head = u.returns(u.nil)
+    this.tail = u.returns(this)
     this.read = u.noop
     this.map = u.noop
     this.reduce = function(initial, reducer)
     {
         return initial
     }
-    this.filter = u.returnValue(this)
+    this.filter = u.returns(this)
     this.each = u.noop
 })
 

@@ -184,7 +184,7 @@ u.Component = function(type, properties, output)
      * Returns the type name of this component
      * @return:string
      */
-    this.type = u.returnValue(type)
+    this.type = u.returns(type)
 
     // TODO[RM]** deal with properties and output
     

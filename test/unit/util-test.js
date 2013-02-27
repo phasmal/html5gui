@@ -216,9 +216,9 @@ test('u.each calls objects existing each method', 1, function()
     deepEqual(called, ['calling'])
 })
 
-test('u.returnValue always returns the configured value', 2, function()
+test('u.returns always returns the configured value', 2, function()
 {
-    var f = u.returnValue('a')
+    var f = u.returns('a')
     
     equal(f(), 'a')
     equal(f(), 'a')

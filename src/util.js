@@ -376,7 +376,7 @@ u.immediate(function()
      *   value:*
      * @return:* the content of the `value` param
      */
-    u.returnValue = function(value)
+    u.returns = function(value)
     {
         var f = function()
         {

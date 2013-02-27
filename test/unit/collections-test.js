@@ -132,26 +132,19 @@ test('stream filters', function()
 
 module('collection.Collection')
 
-var testCol = function(each)
-{
-    var cons = function(iterable) 
-    {
-        u.mixin(this, new u.collection.Collection(cons))
-        this.each = iterable.each
-    }
-    
-    u.mixin(this, new u.collection.Collection(cons))
-    
-    this.each = each
-}
-
-test('collection converts to array', function()
+var testCol = function()
 {
     var n = 0
-    var c = new u.collection.Collection(function()
+    return new u.collection.Collection(function()
     {
         return n >= 100 ? u.nil : n++
     })
+}
+
+
+test('collection converts to array', function()
+{
+    var c = testCol()
     
     var a = []
     for (var i = 0; i < 100; i++)
@@ -164,22 +157,47 @@ test('collection converts to array', function()
 
 test('collection checks if every item matches', function()
 {
+    var c = testCol()
     
+    ok(c.every(function(i){ return i < 100 && i >= 0 }))
+    ok(!c.every(function(i){ return i != 50 }))
 })
 
 test('collection checks if any match', function()
 {
+    var c = testCol()
+    
+    ok(c.any(function(i){ return i == 50 }))
+    ok(!c.any(function(i){ return i == 101 }))
 })
 
 test('collection checks if it contains', function()
 {
+    var c = testCol()
+    ok(c.contains(50))
+    ok(!c.contains(101))
 })
 
 test('collection size', function()
 {
-    equal()
+    equal(new u.collection.Collection(u.returns(u.nil)).size(), 0)
+    
+    var n = 0
+    var c = new u.collection.Collection(function()
+    {
+        return n >= 5 ? u.nil : n++
+    })
+    
+    equal(c.size(), 5)
 })
 
 test('collection converts to string', function()
 {
+    var n = 0
+    var c = new u.collection.Collection(function()
+    {
+        return n >= 5 ? u.nil : n++
+    })
+    
+    equal(c.toString(), '[0, 1, 2, 3, 4]')
 })
