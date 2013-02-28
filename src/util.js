@@ -41,6 +41,16 @@ u.immediate(function()
         return typeof(toTest) == 'string'
     }
     
+    function isBoolean(toTest)
+    {
+        return typeof(toTest) == 'boolean'
+    }
+    
+    function isNumber(toTest)
+    {
+        return typeof(toTest) == 'number'
+    }
+    
     function isArray(toTest)
     {
         return Object.prototype.toString.call(toTest) === '[object Array]'
@@ -228,6 +238,22 @@ u.immediate(function()
      * @return:boolean
      */
     u.isString = isString
+
+    /** 
+     * Returns true if `toTest` is a Javascript boolean.
+     * @params
+     *   toTest:*
+     * @return:boolean
+     */
+    u.isString = isBoolean
+
+    /** 
+     * Returns true if `toTest` is a Javascript number.
+     * @params
+     *   toTest:*
+     * @return:boolean
+     */
+    u.isString = isNumber
   
     /** 
      * Returns true if `toTest` is a Javascript array.
