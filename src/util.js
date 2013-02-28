@@ -447,6 +447,23 @@ u.immediate(function()
         return t
     }
     
+    /** 
+     * Returns a function which calls the given function only on it's first invocation.
+     * @params
+     *   f:function
+     * @return:function
+     */
+    u.once = function(f)
+    {
+        var val = u.nil
+        
+        return (function()
+        {
+            if (val.isNil) val = f.apply(arguments)
+            return val
+        })
+    }
+    
     /**
      * Ajax request to url, calling success/fail callback on receipt of response. 
      * If postData is specified, then POST is used,  otherwise GET is used.

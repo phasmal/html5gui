@@ -283,3 +283,20 @@ test('u.tail of empty string returns nil', 1, function()
 {
     equal(u.tail(''), u.nil)
 })
+
+test('u.once only computes value once', 4, function()
+{
+    var count = 0
+    var f = u.once(function()
+    {
+        return count++
+    })
+    
+    var value = f()
+    equal(value, 0)
+    equal(count, 1)
+    
+    value = f()
+    equal(value, 0)
+    equal(count, 1)
+})
