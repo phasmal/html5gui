@@ -245,7 +245,7 @@ u.immediate(function()
      *   toTest:*
      * @return:boolean
      */
-    u.isString = isBoolean
+    u.isBoolean = isBoolean
 
     /** 
      * Returns true if `toTest` is a Javascript number.
@@ -253,7 +253,7 @@ u.immediate(function()
      *   toTest:*
      * @return:boolean
      */
-    u.isString = isNumber
+    u.isNumber = isNumber
   
     /** 
      * Returns true if `toTest` is a Javascript array.

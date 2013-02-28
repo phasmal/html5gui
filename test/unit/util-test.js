@@ -42,6 +42,26 @@ test('u.isString false for non-string', 1, function()
     ok(!u.isString(1))
 })
 
+test('u.isBoolean detects boolean', 1, function()
+{
+    ok(u.isBoolean(true))
+})
+
+test('u.isBoolean false for non-boolean', 1, function()
+{
+    ok(!u.isBoolean(1))
+})
+
+test('u.isNumber detects number', 1, function()
+{
+    ok(u.isNumber(1))
+})
+
+test('u.isNumber false for non-number', 1, function()
+{
+    ok(!u.isNumber(''))
+})
+
 test('u.isArray detects array', 1, function()
 {
     ok(u.isArray([]))
