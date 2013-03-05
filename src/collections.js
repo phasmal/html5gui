@@ -35,7 +35,16 @@ u.collection.Stream = function(items)
     }
     
     var head = iterator()
-    var next = u.nil
+    var hasValues = u.returns(head != u.nil)
+    var tail = u.once(function()
+    {
+        var next = hasValues() ? new u.collection.Stream(iterator) : u.collection.EmptyStream
+        if (next.isEmpty())
+        {
+            next = u.collection.EmptyStream
+        }
+        return next
+    })
     
     /** 
      * Returns true if this stream has any values in it. This means that a call to {@#head()} will
@@ -43,14 +52,14 @@ u.collection.Stream = function(items)
      *  
      * @return:boolean
      */
-    this.hasValues = u.returns(head != u.nil)
+    this.hasValues = hasValues
     
     /**
      * Returns true if there are no more values in this stream. This means  a call to {@#head()}
      * returns u.nil.
      * @return:boolean
      */
-    this.isEmpty = u.not(this.hasValues)
+    this.isEmpty = u.not(hasValues)
     
     /** 
      * Returns the item at the head of the stream, {@u.nil} if there are no items in the stream. 
@@ -62,22 +71,12 @@ u.collection.Stream = function(items)
      *  this stream has no elements, then this is returned.
      *  @return:u.collection.Stream
      */
-    this.tail = function()
-    {
-        if (next.isNil)
-        {
-            next = this.hasValues() ? new u.collection.Stream(iterator) : u.collection.EmptyStream
-            if (next.isEmpty())
-            {
-                next = u.collection.EmptyStream
-            }
-        }
-        return next
-    }
+    this.tail = tail
     
     /** Returns a stream where each item is the result of calling mapping on items from this stream 
      * @params
      *   mapping:function
+     * @return:u.collection.Stream
      */
     this.map = function(mapping)
     {
@@ -157,12 +156,12 @@ u.collection.Stream = function(items)
      */
     this.read = function(reader)
     {
-        if (this.hasValues())
+        if (hasValues())
         {
             var readNext = reader(head)
             if (readNext)
             {
-                this.tail().read(reader)
+                tail().read(reader)
             }
         }
     }
@@ -178,7 +177,7 @@ u.collection.EmptyStream = u.singleton(function()
     this.head = u.returns(u.nil)
     this.tail = u.returns(this)
     this.read = u.noop
-    this.map = u.noop
+    this.map = u.returns(this)
     this.reduce = function(initial, reducer)
     {
         return initial
@@ -277,11 +276,56 @@ u.collection.Collection = function(iterator)
  * A stream that supports reporting character and line locations. 
  * 
  * @params
- *   items:string|*[]|function 
+ *   text:string
+ *   
+ * @throws if text is not a string
  */
-u.collection.ParseStream = function(items)
+u.collection.ParseStream = function(text)
 {
-    u.mixin(this, new u.collection.Stream(items))
+    // private inner class
+    function PositionedStream(line, char, stream)
+    {   
+        u.mixin(this, stream)
+        
+        function position()
+        
+        this.position = function()
+        {
+            return {
+                line: line,
+                char: char
+            }
+        }
+        
+        this.tail = u.once(function()
+        {
+            var nextLine = line
+            var nextChar = char
+
+            if (stream.head() === '\n')
+            {
+                nextLine++
+                nextChar = 1
+            }
+            else
+            {
+                nextChar++
+            }
+
+            return new PositionedStream(nextLine, nextChar, stream.tail())
+        })
+    }
     
+    if (!u.isString(text) && ! text instanceof PositionedStream)
+    {
+        throw new Error('Parameter to ParseStream must be a string. Param was:' + text)
+    }
     
+    var positioned = text instanceof PositionedStream ? text : new PositionedStream(1,1, new u.collection.Stream(text))
+    u.mixin(this, positioned)
+    
+    this.tail = u.once(function()
+    {
+        return new u.collection.ParseStream(positioned.tail())
+    })
 }
