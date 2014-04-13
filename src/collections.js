@@ -1,12 +1,13 @@
 u.collection = {}
 
 /**
- * A sequence of items that can be accessed, one at a time in sequence.
+ * A sequence of items that can be accessed, one at a time in sequence. Streams cannot contain
+ * {@u.nil} items
  * @params
  *   items:(*[]|string|function) the items for the stream, one of:
  *     * array, whose elements are the items
  *     * string, whose characters are the items
- *     * function, which returns an item for each iteration, returning u.nil once there are no more
+ *     * function, which returns an item for each iteration, returning u.end once there are no more
  *       items
  */
 u.collection.Stream = function(items)
@@ -20,7 +21,7 @@ u.collection.Stream = function(items)
             var i = 0
             var f = function()
             {
-                return i < items.length ? items[i++] : u.nil
+                return i < items.length ? items[i++] : u.end
             }
             return f
         })
@@ -31,11 +32,11 @@ u.collection.Stream = function(items)
     }
     else
     {
-        iterator = u.returns(u.nil)
+        iterator = u.returns(u.end)
     }
     
     var head = iterator()
-    var hasValues = u.returns(head != u.nil)
+    var hasValues = u.returns(head != u.end)
     var tail = u.once(function()
     {
         var next = hasValues() ? new u.collection.Stream(iterator) : u.collection.EmptyStream
@@ -56,24 +57,28 @@ u.collection.Stream = function(items)
     
     /**
      * Returns true if there are no more values in this stream. This means  a call to {@#head()}
-     * returns u.nil.
+     * returns u.end.
      * @return:boolean
      */
     this.isEmpty = u.not(hasValues)
     
     /** 
-     * Returns the item at the head of the stream, {@u.nil} if there are no items in the stream. 
+     * Returns the item at the head of the stream, {@u.end} if there are no items in the stream. 
      * @return:*
      */
     this.head = u.returns(head)
     
-    /** Returns the remainder of the stream (a stream containing everything except for the head). If
-     *  this stream has no elements, then this is returned.
-     *  @return:u.collection.Stream
+    /** 
+     * Returns the remainder of the stream (a stream containing everything except for the head). If
+     * this stream has no elements, then this is returned.
+     * @return:u.collection.Stream
      */
     this.tail = tail
     
-    /** Returns a stream where each item is the result of calling mapping on items from this stream 
+    /** 
+     * Returns a stream where each item is the result of calling mapping on items from this stream.
+     * If mapping returns {@u.nil} for an item, then nothing is added to the new stream for that item.
+     * 
      * @params
      *   mapping:function
      * @return:u.collection.Stream
@@ -85,7 +90,7 @@ u.collection.Stream = function(items)
         {
             var item = s.head()
             s = s.tail()
-            return item != u.nil ? mapping(item) : item
+            return item != u.end ? mapping(item) : u.end
         })
     }
     
@@ -174,7 +179,7 @@ u.collection.EmptyStream = u.singleton(function()
 {
     this.hasValues = u.returns(false)
     this.isEmpty = u.not(this.hasValues)
-    this.head = u.returns(u.nil)
+    this.head = u.returns(u.end)
     this.tail = u.returns(this)
     this.read = u.noop
     this.map = u.returns(this)
