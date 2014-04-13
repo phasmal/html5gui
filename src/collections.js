@@ -161,11 +161,10 @@ u.collection.Stream = function(items)
      */
     this.each = function(iterator)
     {
-        var s = this
-        while (s.hasValues())
+        if (hasValues())
         {
-            iterator(s.head())
-            s = s.tail()
+            iterator(head)
+            tail().each(iterator)
         }
     }
     
