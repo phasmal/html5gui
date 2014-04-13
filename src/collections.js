@@ -14,6 +14,17 @@ u.collection.Stream = function(items)
 {
     var iterator
     
+    // returns a function which calls i for each call but skips past any nils returned by i()
+    function stripNils(i)
+    {
+        return function()
+        {
+            var val = i()
+            while (val == u.nil) val = i()
+            return val
+        }
+    }
+    
     if (u.isArrayLike(items))
     {
         iterator = u.immediate(function()
@@ -34,6 +45,8 @@ u.collection.Stream = function(items)
     {
         iterator = u.returns(u.end)
     }
+    
+    iterator = stripNils(iterator)
     
     var head = iterator()
     var hasValues = u.returns(head != u.end)
