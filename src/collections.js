@@ -17,11 +17,15 @@ u.collection.Stream = function(items)
     // returns a function which calls i for each call but skips past any nils returned by i()
     function stripNils(i)
     {
+        function nextNonNil(j)
+        {
+            var val = j()
+            return val == u.nil ? nextNonNil(j) : val
+        }
+        
         return function()
         {
-            var val = i()
-            while (val == u.nil) val = i()
-            return val
+            return nextNonNil(i)
         }
     }
     
