@@ -117,6 +117,18 @@ test('stream maps to new stream', function()
     deepEqual(toArray(s2), [2,3,4,5,6])
 })
 
+test('stream mapping removes nil-mapped entries', function()
+{
+    var s = new u.collection.Stream([1,2,3,4,5])
+    
+    var s2 = s.map(function(i)
+    {
+        return i % 2 == 0 ? i : u.nil
+    })
+    
+    deepEqual(toArray(s2), [2,4])
+})
+
 test('stream reduces to a result', function()
 {
     var s = new u.collection.Stream([1,2,3,4,5])
