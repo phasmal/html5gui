@@ -429,6 +429,10 @@ u.immediate(function()
     u.nil = {
         isNil: true
     }
+    
+    /** A value representing the end of something. */
+    u.end = {
+    }
 
     /** 
      * Returns the first element of the given array/first character of the given string, {@u.nil}
