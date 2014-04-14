@@ -67,15 +67,27 @@ function toArray(s)
 
 test('stream iterates through function values', function()
 {
-    
     var a = [1,2,3]
     var i = 0
     var s = new u.collection.Stream(function()
     {
-        return i < a.length ? a[i++] : u.nil
+        return i < a.length ? a[i++] : u.end
     })
     
     deepEqual(toArray(s), a)
+})
+
+test('stream skips nil values', function()
+{
+    var a = [1, 2, u.nil, 3]
+    var expected = [1, 2, 3]
+    var i = 0
+    var s = new u.collection.Stream(function()
+    {
+        return i < a.length ? a[i++] : u.end //TODO implement u.end as end of stream!!
+    })
+    
+    deepEqual(toArray(s), expected)
 })
 
 test('stream reader reads part of stream', function()
@@ -103,6 +115,18 @@ test('stream maps to new stream', function()
     })
     
     deepEqual(toArray(s2), [2,3,4,5,6])
+})
+
+test('stream mapping removes nil-mapped entries', function()
+{
+    var s = new u.collection.Stream([1,2,3,4,5])
+    
+    var s2 = s.map(function(i)
+    {
+        return i % 2 == 0 ? i : u.nil
+    })
+    
+    deepEqual(toArray(s2), [2,4])
 })
 
 test('stream reduces to a result', function()
@@ -137,7 +161,7 @@ var testCol = function()
     var n = 0
     return new u.collection.Collection(function()
     {
-        return n >= 100 ? u.nil : n++
+        return n >= 100 ? u.end : n++
     })
 }
 
@@ -180,12 +204,12 @@ test('collection checks if it contains', function()
 
 test('collection size', function()
 {
-    equal(new u.collection.Collection(u.returns(u.nil)).size(), 0)
+    equal(new u.collection.Collection(u.returns(u.end)).size(), 0)
     
     var n = 0
     var c = new u.collection.Collection(function()
     {
-        return n >= 5 ? u.nil : n++
+        return n >= 5 ? u.end : n++
     })
     
     equal(c.size(), 5)
@@ -196,7 +220,7 @@ test('collection converts to string', function()
     var n = 0
     var c = new u.collection.Collection(function()
     {
-        return n >= 5 ? u.nil : n++
+        return n >= 5 ? u.end : n++
     })
     
     equal(c.toString(), '[0, 1, 2, 3, 4]')
