@@ -154,7 +154,7 @@ u.Template = function(spec)
             }
             else
             {
-                symbols = u.cat(parse(tail))
+                symbols = u.cat(h, parse(tail))
             }
         }
         return symbols
