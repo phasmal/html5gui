@@ -325,7 +325,7 @@ u.collection.Collection = function(iterator)
 }
 
 /**
- * A linked list collection.
+ * A collection that can have items added to create new longer instances.
  * 
  * @params
  *    iterator:string|*[]|function a string or array withe the initial list items, or a function 
@@ -333,7 +333,7 @@ u.collection.Collection = function(iterator)
  *                                 returning u.nil if there are no more items to return
  * @extends u.collection.Collection
  */
-u.collection.LinkedList = function(iterator)
+u.collection.Accumulator = function(iterator)
 {
     var list = u.mixin(this, new u.collection.Collection(iterator))
     
@@ -347,7 +347,7 @@ u.collection.LinkedList = function(iterator)
     {
         var i = list.iterator()
         var last = item
-        return new u.collection.LinkedList(function()
+        return new u.collection.Accumulator(function()
         {
             var next = i()
             if (next == u.end && last != u.end)

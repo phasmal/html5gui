@@ -246,25 +246,25 @@ test('collection converts to string', function()
     equal(c.toString(), '[0, 1, 2, 3, 4]')
 })
 
-module('u.collection.LinkedList')
+module('u.collection.Accumulator')
 
-test('list starts out empty', function()
+test('accumulator starts out empty', function()
 {
-    var l = new u.collection.LinkedList()
+    var l = new u.collection.Accumulator()
     ok(!l.hasValues())
 })
 
-test('list can have items added', function()
+test('accumulator can have items added', function()
 {
-    var l = new u.collection.LinkedList()
+    var l = new u.collection.Accumulator()
     var dl = l.add('a')
     ok(dl.hasValues())
     equal(dl.head(), 'a')
 })
 
-test('list with item added is different list instance', function()
+test('accumulator with item added is different list instance', function()
 {
-    var l = new u.collection.LinkedList()
+    var l = new u.collection.Accumulator()
     var dl = l.add('a')
     ok(dl !== l)
 })
