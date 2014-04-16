@@ -86,13 +86,10 @@ u.Template = function(spec)
     
     function toString(stream)
     {
-        var text = ''
-        var s = stream
-        while (s.hasValues())
+        return stream.reduce('', function(text, item)
         {
-            text = text + s.head()
-        }
-        return text
+            return text + item;
+        })
     }
     
     var parsers = {
@@ -160,7 +157,7 @@ u.Template = function(spec)
         return symbols
     }
     
-    var parts = parse(new u.collection.Stream(spec)).parts
+    var result = parse(new u.collection.Stream(spec))
     
     /** Applies this template in the context of the given objects.
      *
@@ -168,7 +165,10 @@ u.Template = function(spec)
      *   context:object? an object whose properties are exposed to the template as variables, 
      *                   default is an empty object
      */
-    this.apply = parts.apply
+    this.apply = function()
+    {
+        return toString(new u.collection.Stream(result));
+    }
 }
 
 /**
