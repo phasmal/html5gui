@@ -335,7 +335,7 @@ u.collection.Collection = function(iterator)
  */
 u.collection.LinkedList = function(iterator)
 {
-    u.mixin(this, new u.collection.Collection(iterator))
+    var list = u.mixin(this, new u.collection.Collection(iterator))
     
     /**
      * Returns a new linked list which is equivalent to this one with the exception that it has
@@ -345,7 +345,18 @@ u.collection.LinkedList = function(iterator)
      */
     this.add = function(item)
     {
-        return new u.collection.LinkedList()
+        var i = list.iterator()
+        var last = item
+        return new u.collection.LinkedList(function()
+        {
+            var next = i()
+            if (next == u.end && last != u.end)
+            {
+                next = last
+                last = u.end
+            }
+            return next
+        })
     }
 }
 

@@ -258,8 +258,8 @@ test('list can have items added', function()
 {
     var l = new u.collection.LinkedList()
     var dl = l.add('a')
-    ok(l.hasValues())
-    equal(l.head(), 'a')
+    ok(dl.hasValues())
+    equal(dl.head(), 'a')
 })
 
 test('list with item added is different list instance', function()
