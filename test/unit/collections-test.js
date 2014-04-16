@@ -226,6 +226,29 @@ test('collection converts to string', function()
     equal(c.toString(), '[0, 1, 2, 3, 4]')
 })
 
+module('u.collection.List')
+
+test('list starts out empty', function()
+{
+    var l = new u.collection.List()
+    ok(!l.hasValues())
+})
+
+test('list can have items added', function()
+{
+    var l = new u.collection.List()
+    var dl = l.add('a')
+    ok(l.hasValues())
+    equal(l.head(), 'a')
+})
+
+test('list with item added is different list instance', function()
+{
+    var l = new u.collection.List()
+    var dl = l.add('a')
+    ok(dl !== l)
+})
+
 module('u.collection.ParseStream')
 
 test('reports char location', function()
