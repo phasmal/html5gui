@@ -77,6 +77,26 @@ test('stream iterates through function values', function()
     deepEqual(toArray(s), a)
 })
 
+test('stream iterator iterates through array', function()
+{
+    var a = [1,2,3]
+    var s = new u.collection.Stream(a)
+    
+    var i = s.iterator()
+    
+    var result = []
+    
+    var x = i()
+    while (x != u.end)
+    {
+        result.push(x)
+        x = i()
+    }
+    
+    deepEqual(result, a)
+})
+    
+
 test('stream skips nil values', function()
 {
     var a = [1, 2, u.nil, 3]
@@ -226,17 +246,17 @@ test('collection converts to string', function()
     equal(c.toString(), '[0, 1, 2, 3, 4]')
 })
 
-module('u.collection.List')
+module('u.collection.LinkedList')
 
 test('list starts out empty', function()
 {
-    var l = new u.collection.List()
+    var l = new u.collection.LinkedList()
     ok(!l.hasValues())
 })
 
 test('list can have items added', function()
 {
-    var l = new u.collection.List()
+    var l = new u.collection.LinkedList()
     var dl = l.add('a')
     ok(l.hasValues())
     equal(l.head(), 'a')
@@ -244,7 +264,7 @@ test('list can have items added', function()
 
 test('list with item added is different list instance', function()
 {
-    var l = new u.collection.List()
+    var l = new u.collection.LinkedList()
     var dl = l.add('a')
     ok(dl !== l)
 })

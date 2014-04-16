@@ -112,6 +112,22 @@ u.collection.Stream = function(items)
     this.tail = tail
     
     /** 
+     * Returns an iterator function which will return each item of this stream for successive calls,
+     * {@u.end} if there are no more stream items to return.
+     */
+    this.iterator = function()
+    {
+        var s = this
+        
+        return function()
+        {
+            var h = s.head()
+            s = s.tail()
+            return h
+        }
+    }
+    
+    /** 
      * Returns a stream where each item is the result of calling mapping on items from this stream.
      * If mapping returns {@u.nil} for an item, then nothing is added to the new stream for that item.
      * 
@@ -305,6 +321,31 @@ u.collection.Collection = function(iterator)
             this.each(array.push.bind(array))
         }
         return array
+    }
+}
+
+/**
+ * A linked list collection.
+ * 
+ * @params
+ *    iterator:string|*[]|function a string or array withe the initial list items, or a function 
+ *                                 which will return the next item in the collection with each call, 
+ *                                 returning u.nil if there are no more items to return
+ * @extends u.collection.Collection
+ */
+u.collection.LinkedList = function(iterator)
+{
+    u.mixin(this, new u.collection.Collection(iterator))
+    
+    /**
+     * Returns a new linked list which is equivalent to this one with the exception that it has
+     * {item} as an additional item at the end of the sequence.
+     * @params
+     *   item:* the item to add to the end of the list
+     */
+    this.add = function(item)
+    {
+        return new u.collection.LinkedList()
     }
 }
 
