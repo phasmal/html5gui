@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Performance Tests</title>
+    <style>
+        html,
+        body
+        {
+            height: 97%;
+        }
+        
+        #output
+        {
+            color: white;
+            background-color: black;
+            font-family: monospace;
+            border: 2px solid grey;
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div id="output"></div>
+    <script src="../../src/util.js"></script>
+    <script src="../../src/collections.js"></script>
+    <script src="../../src/html5gui.js"></script>
+    <script src="performance-test.js"></script>
+    <script type="text/javascript">
+        var output = document.getElementById('output')
+        var count = 10
+        var size = 100
+        performanceTest(count, size, function(text)
+        {
+            output.innerHTML += text + '\n'
+        })
+    </script>
+</body>
+</html>

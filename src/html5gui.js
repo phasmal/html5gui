@@ -124,7 +124,7 @@ u.Template = function(spec)
     
     function parse(stream)
     {
-        var symbols = [] // TODO[RM]* List instead of array
+        var symbols = [] // TODO[RM]* Accumulator instead of array
         if (stream.hasValues())
         {
             var h = stream.head()

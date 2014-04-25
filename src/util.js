@@ -159,6 +159,16 @@ u.immediate(function()
         
         return g
     }
+    
+    function returns(value)
+    {
+        var f = function()
+        {
+            return value
+        }
+        
+        return f
+    }
 
     // 
     // Public functions
@@ -402,15 +412,7 @@ u.immediate(function()
      *   value:*
      * @return:* the content of the `value` param
      */
-    u.returns = function(value)
-    {
-        var f = function()
-        {
-            return value
-        }
-        
-        return f
-    }
+    u.returns = returns
     
     /** Returns a function that returns the boolean negation of the given function's return.
      *  @params
@@ -427,11 +429,13 @@ u.immediate(function()
 
     /** A value representing no value. */
     u.nil = {
-        isNil: true
+        isNil: true,
+        toString: returns(":NIL")
     }
     
     /** A value representing the end of something. */
     u.end = {
+        toString: returns(":END")
     }
 
     /** 
