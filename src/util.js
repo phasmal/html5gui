@@ -435,6 +435,7 @@ u.immediate(function()
     
     /** A value representing the end of something. */
     u.end = {
+        isEnd: true,
         toString: returns(":END")
     }
 

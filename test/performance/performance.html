@@ -31,12 +31,31 @@
     <script src="performance-test.js"></script>
     <script type="text/javascript">
         var output = document.getElementById('output')
-        var count = 10
-        var size = 100
-        performanceTest(count, size, function(text)
+        var write = function(text)
         {
             output.innerHTML += text + '\n'
-        })
+        }
+        var iterations = 10
+        var repeats = 10
+        
+        for (var i = 0; i < 50; i++)
+        {
+            var size = i
+            write('TEST ' + size + '\n')
+            performanceTest(
+                iterations, 
+                repeats, 
+                function()
+                {
+                    var a = new u.collection.Accumulator()
+                    for (var j = 0; j < size; j++)
+                    {
+                        a = a.add(j)
+                    }
+                },
+                write)
+            write('\n\n')
+        }
     </script>
 </body>
 </html>
