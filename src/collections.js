@@ -328,15 +328,42 @@ u.collection.Collection = function(iterator)
  * A collection that can have items added to create new longer instances.
  * 
  * @params
- *    iterator:string|*[]|function a string or array withe the initial list items, or a function 
+ *    iterator:string|*[]|function a string or array with the initial list items, or a function 
  *                                 which will return the next item in the collection with each call, 
  *                                 returning u.nil if there are no more items to return
  * @extends u.collection.Collection
  */
-//TODO accumulator that adds in constant time (It's probably n^2 atm)
-u.collection.Accumulator = function(iterator)
+u.collection.Accumulator = function(iterator, toadd)
 {
-    var list = u.mixin(this, new u.collection.Collection(iterator))
+    var collection
+    var list
+    var count
+
+    if (u.isArray(iterator) && toadd !== null) // called from another accumulator's add() method
+    {
+        list = iterator
+        list.push(toadd)
+        count = list.length
+        
+        collection = u.mixin(this, u.immediate(function()
+        {
+            var i = 0
+            return new u.collection.Collection(function() {
+                return i >= count ? u.end : list[i]
+            })
+        }))
+    }
+    else
+    {
+        collection = u.mixin(this, new u.collection.Collection(iterator))
+        list = collection.asArray()
+        count = list.length
+    }
+    
+    // true if this accumulator has been added to - implements a copy-on-write for adding for the
+    // second time to the same point in an accumulated stream
+    var branched = false
+    
     
     /**
      * Returns a new linked list which is equivalent to this one with the exception that it has
@@ -346,18 +373,17 @@ u.collection.Accumulator = function(iterator)
      */
     this.add = function(item)
     {
-        var i = list.iterator()
-        var last = item
-        return new u.collection.Accumulator(function()
+        var result
+        if (!branched)
         {
-            var next = i()
-            if (next == u.end && last != u.end)
-            {
-                next = last
-                last = u.end
-            }
-            return next
-        })
+            branched = true
+            result = new u.collection.Accumulator(list, item)
+        }
+        else // already have used following elements of list, so copy whole list to new accumulator
+        {
+            result = new u.collection.Accumulator(list)
+        }
+        return result
     }
 }
 
