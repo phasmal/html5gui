@@ -267,6 +267,7 @@ test('accumulator with item added is different list instance', function()
     var l = new u.collection.Accumulator()
     var dl = l.add('a')
     ok(dl !== l)
+    ok(dl.size() == (l.size() + 1))
 })
 
 module('u.collection.ParseStream')

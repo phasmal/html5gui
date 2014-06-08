@@ -252,8 +252,6 @@ u.collection.Collection = function(iterator)
 {
     u.mixin(this, new u.collection.Stream(iterator))
     
-    var array = u.nil
-    
     /** 
      * Returns true if `test` return true for every item in the list. 
      * @params
@@ -301,7 +299,10 @@ u.collection.Collection = function(iterator)
      */
     this.size = function()
     {
-        return this.asArray().length
+        return this.reduce(0, function(count, item)
+        {
+            return count + 1
+        })
     }
     
     this.toString = function()
@@ -315,11 +316,8 @@ u.collection.Collection = function(iterator)
      */
     this.asArray = function()
     {
-        if (array.isNil)
-        {
-            array = []
-            this.each(array.push.bind(array))
-        }
+        var array = []
+        this.each(array.push.bind(array))
         return array
     }
 }
@@ -349,7 +347,7 @@ u.collection.Accumulator = function(iterator, toadd)
         {
             var i = 0
             return new u.collection.Collection(function() {
-                return i >= count ? u.end : list[i]
+                return i >= count ? u.end : list[i++]
             })
         }))
     }
