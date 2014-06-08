@@ -333,6 +333,7 @@ u.collection.Collection = function(iterator)
  *                                 returning u.nil if there are no more items to return
  * @extends u.collection.Collection
  */
+//TODO accumulator that adds in constant time (It's probably n^2 atm)
 u.collection.Accumulator = function(iterator)
 {
     var list = u.mixin(this, new u.collection.Collection(iterator))

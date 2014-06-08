@@ -37,11 +37,13 @@
         }
         var iterations = 10
         var repeats = 10
+        var max = 50
+        var stride = 1
         
-        for (var i = 0; i < 50; i++)
+        for (var i = 0; i <= (max / stride); i++)
         {
-            var size = i
-            write('TEST ' + size + '\n')
+            var size = i * stride
+            write('TEST ' + i + ' for size ' + size + '\n')
             performanceTest(
                 iterations, 
                 repeats, 
