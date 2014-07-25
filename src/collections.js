@@ -337,7 +337,7 @@ u.collection.Accumulator = function(iterator, toadd)
     var list
     var count
 
-    if (u.isArray(iterator) && toadd !== null) // called from another accumulator's add() method
+    if (u.isArray(iterator) && toadd !== null) // if called from another accumulator's add() method
     {
         list = iterator
         list.push(toadd)

@@ -270,6 +270,15 @@ test('accumulator with item added is different list instance', function()
     ok(dl.size() == (l.size() + 1))
 })
 
+test('accumulator adds items in order', function()
+{
+    var l = new u.collection.Accumulator()
+    var l2 = l.add('a')
+    var l3 = l2.add('b')
+
+    deepEqual(l3.asArray(), ['a','b'])
+})
+
 module('u.collection.ParseStream')
 
 test('reports char location', function()
