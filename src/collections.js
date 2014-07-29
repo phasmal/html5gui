@@ -339,6 +339,7 @@ u.collection.Accumulator = function(iterator, toadd)
 
     if (u.isArray(iterator) && toadd !== null) // if called from another accumulator's add() method
     {
+console.log('called from acc add method with ' + iterator)
         list = iterator
         list.push(toadd)
         count = list.length
@@ -353,7 +354,9 @@ u.collection.Accumulator = function(iterator, toadd)
     }
     else
     {
+console.log('not called from acc add method')
         collection = u.mixin(this, new u.collection.Collection(iterator))
+console.log(' ... called with: ' + collection.asArray())
         list = collection.asArray()
         count = list.length
     }
@@ -379,7 +382,7 @@ u.collection.Accumulator = function(iterator, toadd)
         }
         else // already have used following elements of list, so copy whole list to new accumulator
         {
-            result = new u.collection.Accumulator(list)
+            result = new u.collection.Accumulator(collection)
         }
         return result
     }

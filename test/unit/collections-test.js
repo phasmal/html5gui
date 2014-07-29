@@ -279,6 +279,17 @@ test('accumulator adds items in order', function()
     deepEqual(l3.asArray(), ['a','b'])
 })
 
+test('accumulator added to twice leaves result of first add unaffected', function()
+{
+    var l = new u.collection.Accumulator()
+    var l2 = l.add('a')
+    var l2a = l2.add('b')
+    var l2b = l2.add('c')
+
+    deepEqual(l2a.asArray(), ['a', 'b'])
+    deepEqual(l2b.asArray(), ['a', 'c'])
+})
+
 module('u.collection.ParseStream')
 
 test('reports char location', function()
