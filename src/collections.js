@@ -331,19 +331,28 @@ u.collection.Collection = function(iterator)
  *                                 returning u.nil if there are no more items to return
  * @extends u.collection.Collection
  */
-u.collection.Accumulator = function(iterator, toadd)
+u.collection.Accumulator = function(iterator, toadd, prevCount)
 {
     var collection
     var list
     var count
-
-    if (u.isArray(iterator) && toadd !== null) // if called from another accumulator's add() method
+    // if called from another accumulator's add() method
+    if (u.isArray(iterator) && toadd !== null)
     {
 console.log('called from acc add method with ' + iterator)
-        list = iterator
-        list.push(toadd)
-        count = list.length
-        
+        if (prevCount != null) // copying in order to branch
+        {
+            list = u.arrayCopy(iterator) // TODO only copy up to prevCount here
+            list[prevCount] = toadd
+            count = prevCount + 1
+        }
+        else // extending existing
+        {
+            list = iterator
+            list.push(toadd)
+            count = list.length
+        }
+
         collection = u.mixin(this, u.immediate(function()
         {
             var i = 0
@@ -382,7 +391,7 @@ console.log(' ... called with: ' + collection.asArray())
         }
         else // already have used following elements of list, so copy whole list to new accumulator
         {
-            result = new u.collection.Accumulator(collection)
+            result = new u.collection.Accumulator(list, item, count)
         }
         return result
     }
