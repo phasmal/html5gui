@@ -33,6 +33,11 @@ u.immediate = function(f)
 u.immediate(function()
 {
     //
+    // Function references
+    //
+    var slice = Array.prototype.slice
+
+    //
     // Private functions
     //
     
@@ -112,7 +117,7 @@ u.immediate(function()
     function cat()
     {
         var array = []
-        each(Array.prototype.slice.call(arguments, 0), function(argument)
+        each(slice.call(arguments, 0), function(argument)
         {
             if (isArray(argument) || isArguments(argument))
             {
@@ -340,8 +345,28 @@ u.immediate(function()
      */
     u.cat = cat
 
-    /** Alias for {@u.cat} */
-    u.arrayCopy = cat
+    /**
+     * Returns a copy of the given `array`. If `start` is specified, the copy will begin from `start` index;
+     * if `end` is specified, the copy will stop at the element index `end - 1`.
+     * @params
+     *   array:array
+     *   [start:number]
+     *   [end: number]
+     */
+    u.arrayCopy = function(array, start, end)
+    {
+        var copy
+        if (start == null) start = 0
+        if (end == null) 
+        {
+            copy = slice.call(array, start)
+        }
+        else
+        {
+            copy = slice.call(array, start, end)
+        } 
+        return copy
+    }
 
     /**
      * Binds the given function so it's `this` is always `thisArg`, returning the resulting function.
@@ -392,7 +417,7 @@ u.immediate(function()
     {
         return (function()
         {
-            var args = Array.prototype.slice.apply(arguments, 0, Math.min(arguments.length, count))
+            var args = slice.apply(arguments, 0, Math.min(arguments.length, count))
             return f.apply(null, args)
         })
     }
@@ -471,7 +496,7 @@ u.immediate(function()
         {
             if (isArguments(list) || isArray(list))
             {
-                t = Array.prototype.slice.call(list, 1)
+                t = slice.call(list, 1)
             }
             else if (isString(list))
             {

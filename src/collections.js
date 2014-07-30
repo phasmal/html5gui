@@ -342,7 +342,7 @@ u.collection.Accumulator = function(iterator, toadd, prevCount)
 console.log('called from acc add method with ' + iterator)
         if (prevCount != null) // copying in order to branch
         {
-            list = u.arrayCopy(iterator) // TODO only copy up to prevCount here
+            list = u.arrayCopy(iterator, 0, prevCount + 1) // TODO only copy up to prevCount here
             list[prevCount] = toadd
             count = prevCount + 1
         }

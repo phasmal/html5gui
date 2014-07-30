@@ -131,6 +131,36 @@ test('u.cat joins arrays in order', 1, function()
     deepEqual(c, [1,2,3,4,5,6])
 })
 
+test('u.arrayCopy copies a whole array', 1, function()
+{
+    var a = [1,2,3]
+    var b = u.arrayCopy(a)
+    deepEqual(b, a)
+})
+
+test('u.arrayCopy creates array unaffected by changes to original', 2, function()
+{
+    var a = [1,2,3,4]
+    var b = u.arrayCopy(a)
+    a[2] = 9
+    equal(a[2], 9)
+    equal(b[2], 3)
+})
+
+test('u.arrayCopy copies subarray from index', 1, function()
+{
+    var a = [1,2,3]
+    var b = u.arrayCopy(a, 1)
+    deepEqual(b, [2, 3])
+})
+
+test('u.arrayCopy copies subarray from/to index', 1, function()
+{
+    var a = [1,2,3,4]
+    var b = u.arrayCopy(a, 1, 3)
+    deepEqual(b, [2, 3])
+})
+
 test('u.bind changes this arg for function', 1, function()
 {
     var a = {
