@@ -24,6 +24,17 @@ test('u.has detects no property', 1, function()
     ok(!u.has({b:'value'}, 'a'))
 })
 
+test('u.has detects undefined', 1, function()
+{
+    var undef
+    ok(!u.has(undef, 'a'))
+})
+
+test('u.has detects null', 1, function()
+{
+    ok(!u.has(null, 'a'))
+})
+
 
 test('u.canDo creates function that detects method', 2, function()
 {

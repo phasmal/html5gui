@@ -188,7 +188,7 @@ u.immediate(function()
      */
     u.has = function(o, method)
     {
-        return o[method] && typeof o[method] == 'function'
+        return typeof(o) != 'undefined' && o !== null && o[method] && typeof o[method] == 'function'
     }
 
     /** 

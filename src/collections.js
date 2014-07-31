@@ -1,14 +1,21 @@
 u.collection = {}
 
+/** 
+ * Returns an iterator function which will return each item of this stream for successive calls,
+ * {@u.end} if there are no more stream items to return.
+ */
+u.can.iterator = u.canDo('iterator')
+
 /**
  * A sequence of items that can be accessed, one at a time in sequence. Streams cannot contain
  * {@u.nil} items
  * @params
- *   items:(*[]|string|function) the items for the stream, one of:
+ *   items:(*[]|string|function|u.collection.Stream) the items for the stream, one of:
  *     * array, whose elements are the items
  *     * string, whose characters are the items
  *     * function, which returns an item for each iteration, returning u.end once there are no more
  *       items
+ *     * stream, which contains the items to populate this stream with
  */
 u.collection.Stream = function(items)
 {
@@ -44,6 +51,10 @@ u.collection.Stream = function(items)
     else if (u.isFunction(items))
     {
         iterator = items
+    }
+    else if (u.can.iterator(items))
+    {
+        iterator = items.iterator()
     }
     else
     {
@@ -112,8 +123,7 @@ u.collection.Stream = function(items)
     this.tail = tail
     
     /** 
-     * Returns an iterator function which will return each item of this stream for successive calls,
-     * {@u.end} if there are no more stream items to return.
+     * @does u.can.iterator
      */
     this.iterator = function()
     {
@@ -182,9 +192,7 @@ u.collection.Stream = function(items)
     }
     
     /** 
-     * Passes each item of the stream in turn to the iterator function.
-     * @params
-     *   iterator:function
+     * @does u.can.each
      */
     this.each = each
     
@@ -339,10 +347,9 @@ u.collection.Accumulator = function(iterator, toadd, prevCount)
     // if called from another accumulator's add() method
     if (u.isArray(iterator) && toadd !== null)
     {
-console.log('called from acc add method with ' + iterator)
         if (prevCount != null) // copying in order to branch
         {
-            list = u.arrayCopy(iterator, 0, prevCount + 1) // TODO only copy up to prevCount here
+            list = u.arrayCopy(iterator, 0, prevCount + 1)
             list[prevCount] = toadd
             count = prevCount + 1
         }
@@ -363,9 +370,7 @@ console.log('called from acc add method with ' + iterator)
     }
     else
     {
-console.log('not called from acc add method')
         collection = u.mixin(this, new u.collection.Collection(iterator))
-console.log(' ... called with: ' + collection.asArray())
         list = collection.asArray()
         count = list.length
     }
@@ -376,7 +381,7 @@ console.log(' ... called with: ' + collection.asArray())
     
     
     /**
-     * Returns a new linked list which is equivalent to this one with the exception that it has
+     * Returns a new accumulator which is equivalent to this one with the exception that it has
      * {item} as an additional item at the end of the sequence.
      * @params
      *   item:* the item to add to the end of the list
@@ -394,6 +399,24 @@ console.log(' ... called with: ' + collection.asArray())
             result = new u.collection.Accumulator(list, item, count)
         }
         return result
+    }
+    
+    
+    /**
+     * Returns a new accumulator which is equivalent to this one with the exception that it has
+     * each of {items} as additional items at the end of the sequence.
+     * @params
+     *   items:String|*[]|function|u.collection.Stream the items to add to the end of the list
+     */
+    this.addAll = function(items)
+    {
+        return new u.collection.Stream(items).reduce(this, function(result, item)
+        {
+            // TODO create a functional callMethod(string) that creates a function that will 
+            // take an object and args and apply those args to the given named method in 
+            // that object, returning the called methods return value.
+            return result.add(item)
+        })
     }
 }
 

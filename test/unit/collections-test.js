@@ -77,6 +77,19 @@ test('stream iterates through function values', function()
     deepEqual(toArray(s), a)
 })
 
+test('stream iterates through other streams values', function()
+{
+    var a = [1,2,3]
+    var i = 0
+    var s = new u.collection.Stream(function()
+    {
+        return i < a.length ? a[i++] : u.end
+    })
+    var s2 = new u.collection.Stream(s)
+    
+    deepEqual(toArray(s2), a)
+})
+
 test('stream iterator iterates through array', function()
 {
     var a = [1,2,3]
@@ -279,7 +292,7 @@ test('accumulator adds items in order', function()
     deepEqual(l3.asArray(), ['a','b'])
 })
 
-test('accumulator added to twice leaves result of first add unaffected', function()
+test('accumulator added to twice leaves result of first add unaffected', 2, function()
 {
     var l = new u.collection.Accumulator()
     var l2 = l.add('a')
@@ -288,6 +301,26 @@ test('accumulator added to twice leaves result of first add unaffected', functio
 
     deepEqual(l2a.asArray(), ['a', 'b'])
     deepEqual(l2b.asArray(), ['a', 'c'])
+})
+
+test('accumulator addAll adds all items from array', 1, function()
+{
+    var a = [1, 2, 3]
+    var b = [4, 5, 6]
+    var l = new u.collection.Accumulator()
+    var r = l.addAll(a).addAll(b)
+
+    deepEqual(r.asArray(), [1, 2, 3, 4, 5, 6])
+})
+
+test('accumulator addAll adds all items from sequence', 1, function()
+{
+    var a = [1, 2, 3]
+    var b = new u.collection.Collection([4, 5, 6])
+    var l = new u.collection.Accumulator()
+    var r = l.addAll(a).addAll(b)
+
+    deepEqual(r.asArray(), [1, 2, 3, 4, 5, 6])
 })
 
 module('u.collection.ParseStream')

@@ -124,7 +124,7 @@ u.Template = function(spec)
     
     function parse(stream)
     {
-        var symbols = [] // TODO[RM]* Accumulator instead of array
+        var symbols = new u.collection.Accumulator()
         if (stream.hasValues())
         {
             var h = stream.head()
@@ -134,30 +134,30 @@ u.Template = function(spec)
                 var next = tail.head()
                 if (next == '$')
                 {
-                    symbols = u.cat('$', parse(tail.tail()))
+                    symbols = symbols.add('$').addAll(parse(tail.tail()))
                 }
                 else
                 {
                     var split = parsers.readIdentifier(tail)
                     if (split != null)
                     {
-                        symbols = u.cat(new Expression(split.identifier), parse(split.remainder))
+                        symbols = symbols.add(new Expression(split.identifier)).addAll(parse(split.remainder))
                     }
                     else
                     {
-                        symbols = u.cat('$', parse(tail))
+                        symbols = symbols.add('$').addAll(parse(tail))
                     }
                 }
             }
             else
             {
-                symbols = u.cat(h, parse(tail))
+                symbols = symbols.add(h).addAll(parse(tail))
             }
         }
         return symbols
     }
     
-    var result = parse(new u.collection.Stream(spec))
+    var result = parse(new u.collection.ParseStream(spec))
     
     /** Applies this template in the context of the given objects.
      *
