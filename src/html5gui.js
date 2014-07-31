@@ -55,6 +55,7 @@ u.Template = function(spec)
             }
             else
             {
+                //TODO %s support for u.log
                 u.log.warn(
                     "Applying expression '" + name + "' with no matching property, returning blank.")
             }
@@ -116,6 +117,15 @@ u.Template = function(spec)
                 return parsers.value(stream)
             }
         },
+        /** 
+         * extract a single identifier from stream, return object with 
+         * `identifier` containing the name of the identifier and `remaining` 
+         * containing the stream immediately following the identifier
+         */
+        readIdentifier: function(stream)
+        {
+            // TODO[RM]*** fill this in
+        },
         value: function(stream)
         {
             
@@ -167,7 +177,7 @@ u.Template = function(spec)
      */
     this.apply = function()
     {
-        return toString(new u.collection.Stream(result));
+        return toString(result);
     }
 }
 
