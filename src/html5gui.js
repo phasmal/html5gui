@@ -74,6 +74,12 @@ u.Template = function(spec)
     {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r'
     }
+
+    function isIdentifierChar(c)
+    {
+        var isIdent = /[a-zA-Z_]/
+        return isIdent.test(c)
+    }
     
     function stripWhite(stream)
     {
@@ -124,7 +130,18 @@ u.Template = function(spec)
          */
         readIdentifier: function(stream)
         {
-            // TODO[RM]*** fill this in
+            var result = {
+                identifier: "",
+                remaining: stream
+            }
+
+            while (stream.hasValues() && isIdentifierChar(stream.head()))
+            {
+                result.identifier += stream.head()
+                result.remaining = stream.tail()
+            }
+
+            return result
         },
         value: function(stream)
         {
