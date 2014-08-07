@@ -44,7 +44,7 @@ u.Template = function(spec)
         }
     }
     
-    function Expression(name)
+    function Expression(position, name)
     {
         this.apply = function(context)
         {
@@ -58,7 +58,7 @@ u.Template = function(spec)
                 //TODO %s support for u.log
                 //TODO know character position of source here so we can output it
                 u.log.warn(
-                    "Applying expression '" + name + "' with no matching property, returning blank.")
+                    "Applying expression '" + name + "' with no matching property at line " + position.line + ", char " + position.char + ", returning blank.")
             }
             return value
         }
@@ -170,7 +170,8 @@ u.Template = function(spec)
                     var split = parsers.readIdentifier(tail)
                     if (split != null)
                     {
-                        symbols = symbols.add(new Expression(split.identifier)).addAll(parse(split.remaining))
+                        symbols = symbols.add(new Expression(stream.position(), split.identifier))
+                            .addAll(parse(split.remaining))
                     }
                     else
                     {
