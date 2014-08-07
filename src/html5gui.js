@@ -56,6 +56,7 @@ u.Template = function(spec)
             else
             {
                 //TODO %s support for u.log
+                //TODO know character position of source here so we can output it
                 u.log.warn(
                     "Applying expression '" + name + "' with no matching property, returning blank.")
             }
@@ -91,11 +92,11 @@ u.Template = function(spec)
         return s
     }
     
-    function toString(stream)
+    function apply(context, stream)
     {
         return stream.reduce('', function(text, item)
         {
-            return text + item;
+            return text + (u.isObject(item) ? item.apply(context) : item);
         })
     }
     
@@ -106,16 +107,16 @@ u.Template = function(spec)
             if (stream.head() == '{')
             {
                 var result = parsers.expression(stream.next())
-                var remainder = stripWhite(result.remaining)
-                if (remainder.head() == '}')
+                var remaining = stripWhite(result.remaining)
+                if (remaining.head() == '}')
                 {
-                    result.remainder = remainder.tail()
+                    result.remaining = remaining.tail()
                     return result
                 }
                 else
                 {
                     // TODO[RM]** add line and char by wrapping the stream as a ... 'ParsingStream'?
-                    throw new Error("Parse Error: expected '}', but found " + toString(remainder))
+                    throw new Error("Parse Error: expected '}', but found " + toString(remaining))
                 }
             }
             else
@@ -130,18 +131,19 @@ u.Template = function(spec)
          */
         readIdentifier: function(stream)
         {
-            var result = {
-                identifier: "",
-                remaining: stream
-            }
+            var identifier = ""
+            var remaining = stream
 
-            while (stream.hasValues() && isIdentifierChar(stream.head()))
+            while (remaining.hasValues() && isIdentifierChar(remaining.head()))
             {
-                result.identifier += stream.head()
-                result.remaining = stream.tail()
+                identifier += remaining.head()
+                remaining = remaining.tail()
             }
 
-            return result
+            return {
+                identifier: identifier,
+                remaining: remaining
+            }
         },
         value: function(stream)
         {
@@ -168,7 +170,7 @@ u.Template = function(spec)
                     var split = parsers.readIdentifier(tail)
                     if (split != null)
                     {
-                        symbols = symbols.add(new Expression(split.identifier)).addAll(parse(split.remainder))
+                        symbols = symbols.add(new Expression(split.identifier)).addAll(parse(split.remaining))
                     }
                     else
                     {
@@ -192,9 +194,9 @@ u.Template = function(spec)
      *   context:object? an object whose properties are exposed to the template as variables, 
      *                   default is an empty object
      */
-    this.apply = function()
+    this.apply = function(context)
     {
-        return toString(result);
+        return apply(context, result);
     }
 }
 
