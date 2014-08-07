@@ -361,3 +361,9 @@ test('u.once only computes value once', 4, function()
     equal(value, 0)
     equal(count, 1)
 })
+
+test('u.format substitutes parameters for position marker', 1, function()
+{
+    equal(u.format('a%sb%sc', 1, 2), 'a1b2c')
+})
+

@@ -525,6 +525,27 @@ u.immediate(function()
     }
     
     /**
+     * Returns the result of substituting each successive member of `params` for each successive
+     * occurance of `%s` in the `format` string
+     *
+     * @params
+     *   format:string the string to substitute `%s` instances in
+     *   params:*... parameters to substitute for %s instances
+     */
+   u.format = function(format)
+   {
+       var paramOccurance = /%s/
+       function substitute(format, params)
+       {
+           return (params.hasValues() && paramOccurance.test(format)) ?
+                substitute(format.replace(paramOccurance, params.head()), params.tail())
+                : format
+       }
+
+       return substitute(format, new u.collection.Stream(u.arrayCopy(arguments, 1)))
+   }
+    
+    /**
      * Ajax request to url, calling success/fail callback on receipt of response. 
      * If postData is specified, then POST is used,  otherwise GET is used.
      * @params
