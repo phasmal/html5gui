@@ -134,6 +134,21 @@ u.immediate(function()
 
         return array
     }
+
+    function arrayCopy(array, start, end)
+    {
+        var copy
+        if (start == null) start = 0
+        if (end == null) 
+        {
+            copy = slice.call(array, start)
+        }
+        else
+        {
+            copy = slice.call(array, start, end)
+        } 
+        return copy
+    }
     
     function applyParams(f, paramF)
     {
@@ -353,20 +368,7 @@ u.immediate(function()
      *   [start:number]
      *   [end: number]
      */
-    u.arrayCopy = function(array, start, end)
-    {
-        var copy
-        if (start == null) start = 0
-        if (end == null) 
-        {
-            copy = slice.call(array, start)
-        }
-        else
-        {
-            copy = slice.call(array, start, end)
-        } 
-        return copy
-    }
+    u.arrayCopy = arrayCopy
 
     /**
      * Binds the given function so it's `this` is always `thisArg`, returning the resulting function.
