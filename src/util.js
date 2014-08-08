@@ -149,6 +149,19 @@ u.immediate(function()
         } 
         return copy
     }
+  
+    function formatText(format)
+    {
+        var paramOccurance = /%s/
+        function substitute(format, params)
+        {
+            return (params.hasValues() && paramOccurance.test(format)) ?
+                 substitute(format.replace(paramOccurance, params.head()), params.tail())
+                 : format
+        }
+
+        return substitute(format, new u.collection.Stream(u.arrayCopy(arguments, 1)))
+    }
     
     function applyParams(f, paramF)
     {
@@ -534,18 +547,33 @@ u.immediate(function()
      *   format:string the string to substitute `%s` instances in
      *   params:*... parameters to substitute for %s instances
      */
-   u.format = function(format)
-   {
-       var paramOccurance = /%s/
-       function substitute(format, params)
-       {
-           return (params.hasValues() && paramOccurance.test(format)) ?
-                substitute(format.replace(paramOccurance, params.head()), params.tail())
-                : format
-       }
+   u.format = formatText
 
-       return substitute(format, new u.collection.Stream(u.arrayCopy(arguments, 1)))
-   }
+   /** 
+    * Global logging mechanism, uses browser `console` where available. Has methods `log`, `info`,
+    * `warn` and `error` which by default call the correspondingly named methods in console. 
+    * Each of these methods take the same parameters as {@u.format}.
+    */
+   u.log = u.singleton(function()
+   {
+       var defaultMethod = 'log'
+       var doFormat = applyLeft(formatText.apply, [null])
+       var logObject = this
+       u.each(['log', 'info', 'warn', 'error'], function(method)
+       {
+           logObject[method] = function(format)
+           {
+               if (console[method])
+               {
+                   console[method](doFormat(arguments))
+               }
+               else if (console[defaultMethod])
+               {
+                   console[defaultMethod](doFormat(arguments))
+               }
+           }
+       })
+   })
     
     /**
      * Ajax request to url, calling success/fail callback on receipt of response. 

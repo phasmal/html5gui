@@ -1,12 +1,4 @@
-/** Global logging mechanism, uses browser console where available. */
-u.log = u.singleton(function()
-{
-    var logObject = this
-    u.each(['log', 'info', 'warn', 'error'], function(method)
-    {
-        logObject[method] = u.bind(console, console[method])
-    })
-})
+
 
 /** A template that can be converted into a string relative to a set of properties. 
  * 

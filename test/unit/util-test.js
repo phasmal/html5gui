@@ -367,3 +367,17 @@ test('u.format substitutes parameters for position marker', 1, function()
     equal(u.format('a%sb%sc', 1, 2), 'a1b2c')
 })
 
+test('u.log logs text to console.log', 1, function() {
+    var a = []
+    console.log = function(text)
+    {
+        a.push(text)
+    }
+    
+    var result = ['one', 'two', 'three']
+
+    u.log.log.apply(u.log, result)
+
+    deepEqual(a, result)
+})
+
