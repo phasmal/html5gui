@@ -104,6 +104,36 @@ test('u.isFunction is false for non-functions', 1, function()
     ok(!u.isFunction(''))
 })
 
+test('u.assert does nothing on success', 0, function()
+{
+    u.assert(true)
+})
+
+test('u.assert throws exception on fail', 1, function()
+{
+    throws(function()
+    { 
+        u.assert(false)
+    },
+    /Assertion failed/)
+})
+
+test('u.notNull returns value if not null', 1, function()
+{
+    var value = 'a'
+    var result = u.notNull(value)
+    equal(result, value)
+})
+
+test('u.notNull throws exception if null', 1, function()
+{
+    throws(function()
+    {
+        u.notNull(null)
+    },
+    /Null check failed/)
+})
+
 test('u.mixin mixes in members, overriding existing', 3, function()
 {
     var a = {

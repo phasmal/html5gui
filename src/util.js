@@ -80,6 +80,17 @@ u.immediate(function()
     {
         return typeof(toTest) == 'function'
     }
+
+    function assert(condition)
+    {
+        if (!condition) throw new Error('Assertion failed')
+    }
+
+    function notNull(value)
+    {
+        if (value === null) throw new Error('Null check failed')
+        return value
+    }
     
     function eachNoCustom(list, f)
     {
@@ -326,6 +337,20 @@ u.immediate(function()
      *   toTest:*
      */
     u.isFunction = isFunction
+
+    /**
+     * Throws an error if `condition` is `false`, exists successfully otherwise.
+     * @params
+     *   condition:boolean
+     */
+    u.assert = assert
+
+    /**
+     * Throws an error if `value` is `null`, returning `value` without change otherwise.
+     * @params
+     *   value:*
+     */
+    u.notNull = notNull
     
     /**
      * A convenience function that does nothing
